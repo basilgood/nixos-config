@@ -113,21 +113,16 @@ let
       }
       bindsym $mod+r mode "resize"
       # i3-gaps:
-      for_window [class="^.*"] border pixel 0
+      for_window [class="^.*"] border pixel 2
       smart_gaps on
+      smart_borders no_gaps
       gaps inner 8
       gaps outer 0
-      # colors:
-      set $blue   #1b1e26
-      set $yellow #f0d48b
-      set $grey #b0b287
-      set $green  #789073
-      client.focused    $yellow   $blue   $yellow   $yellow   $yellow
-      client.focused_inactive $yellow   $blue   $grey   $yellow   $yellow
-      client.unfocused  $yellow   $blue   $grey   $yellow   $yellow
-      client.urgent   $yellow   $blue   $yellow   $yellow   $yellow
-      client.placeholder  $yellow   $blue   $yellow   $yellow   $yellow
-      client.background $blue
+      # border colors
+      client.focused #003b5b #003b5b #ffffff #dddddd
+      client.focused_inactive #333333 #333333 #888888 #292d2e
+      client.unfocused #333333 #333333 #888888 #292d2e
+      client.urgent #2f343a #900000 #ffffff #900000c
       # status bar:
       bar {
         height 26
@@ -138,13 +133,13 @@ let
         status_command i3blocks
         tray_padding 5
         colors {
-          background $blue
+          background #1b1e26
           statusline $yellow
           separator  $green
-          focused_workspace $blue $blue $yellow
-          active_workspace  $blue $blue $yellow
-          inactive_workspace  $blue $blue $green
-          urgent_workspace  $blue $blue $grey
+          focused_workspace #1b1e26 #1b1e26 #f0d48b
+          active_workspace  #1b1e26 #1b1e26 #f0d48b
+          inactive_workspace  #1b1e26 #1b1e26 #789073
+          urgent_workspace  #1b1e26 #1b1e26 #dddddd
         }
       }
       for_window [window_role="(?i)(?:pop-up|setup)"]      floating enable

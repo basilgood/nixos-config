@@ -12,18 +12,9 @@ let
       # screenshot:
       # bindsym Print exec --no-startup-id maim -s | ${pkgs.xclip}/bin/xclip -selection clipboard -t image/png
       # bindsym $mod+Print exec --no-startup-id maim ~/Pictures/$(date +%s).jpg
-      # redshift:
-      exec --no-startup-id i3-msg 'exec --no-startup-id ${pkgs.redshift}/bin/redshift-gtk' &
       # backlight
       # bindsym XF86MonBrightnessUp exec --no-startup-id brightnessctl s +10%
       # bindsym XF86MonBrightnessDown exec --no-startup-id brightnessctl s 10%-
-      # pactl to adjust volume in PulseAudio.
-      # exec --no-startup-id ${pkgs.volumeicon}/bin/volumeicon &
-      # exec --no-startup-id ${pkgs.xfce.xfce4-volumed-pulse}/bin/xfce4-volumed-pulse &
-      # bindsym XF86AudioRaiseVolume exec --no-startup-id pactl set-sink-volume @DEFAULT_SINK@ +10%
-      # bindsym XF86AudioLowerVolume exec --no-startup-id pactl set-sink-volume @DEFAULT_SINK@ -10%
-      # bindsym XF86AudioMute exec --no-startup-id pactl set-sink-mute @DEFAULT_SINK@ toggle
-      # bindsym XF86AudioMicMute exec --no-startup-id pactl set-source-mute @DEFAULT_SOURCE@ toggle
       # Use Mouse+$mod to drag floating windows to their wanted position
       floating_modifier $mod
       # start a terminal
@@ -37,7 +28,7 @@ let
       bindsym $mod+Shift+q kill
       # dmenu
       # bindsym $mod+d exec --no-startup-id dmenu_run -fn "monospace 9"
-      bindsym $mod+d exec --no-startup-id ${pkgs.j4-dmenu-desktop}/bin/j4-dmenu-desktop --term=alacritty
+      bindsym $mod+d exec --no-startup-id ${pkgs.j4-dmenu-desktop}/bin/j4-dmenu-desktop --term=alacritty --display-binary
       # change focus
       bindsym $mod+Left focus left
       bindsym $mod+Down focus down
@@ -100,7 +91,7 @@ let
       # restart i3 inplace
       bindsym $mod+Shift+r restart
       # exit i3
-    # bindsym $mod+Shift+e exec --no-startup-id rofi -show p -modi p:rofi-power-menu -theme Arc-Dark -width 20 -lines 6
+      bindsym $mod+Shift+e exec --no-startup-id xfce4-session-logout
       # resize window (you can also use the mouse for that)
       mode "resize" {
         bindsym Left resize grow width 10 px or 10 ppt
@@ -128,24 +119,6 @@ let
       client.urgent   $yellow   $blue   $yellow   $yellow   $yellow
       client.placeholder  $yellow   $blue   $yellow   $yellow   $yellow
       client.background $blue
-      # status bar:
-      # bar {
-      #   height 26
-      #   font pango:Monospace Regular 9
-      #   separator_symbol "::"
-      #   position bottom
-      #   status_command i3blocks
-      #   tray_padding 5
-      #   colors {
-      #     background $blue
-      #     statusline $yellow
-      #     separator  $green
-      #     focused_workspace $blue $blue $yellow
-      #     active_workspace  $blue $blue $yellow
-      #     inactive_workspace  $blue $blue $green
-      #     urgent_workspace  $blue $blue $grey
-      #   }
-      # }
       for_window [window_role="(?i)(?:pop-up|setup)"]      floating enable
       for_window [title="(?i)(?:copying|deleting|moving)"] floating enable
       for_window [class=lxqt-openssh-askpass]  focus, floating enable, resize set 300 100
@@ -156,10 +129,17 @@ let
   '';
 in
 {
-  services.xserver.desktopManager.xterm.enable = false;
   services.xserver = {
     enable = true;
     videoDrivers = [ "amdgpu" ];
+    desktopManager = {
+      xterm.enable = false;
+      xfce = {
+        enable = true;
+        noDesktop = true;
+        enableXfwm = false;
+      };
+    };
     windowManager.i3 = {
       enable = true;
       package = pkgs.i3-gaps;
@@ -168,10 +148,17 @@ in
         networkmanager_dmenu
         dmenu
         libnotify
+        libpng
         arandr
         maim
         pulsemixer
         ytfzf
+        xfce.xfce4-panel
+        xfce.xfce4-i3-workspaces-plugin
+        xfce.xfce4-sensors-plugin
+        xfce.xfce4-datetime-plugin
+        xfce.xfce4-pulseaudio-plugin
+        lxrandr
       ];
       configFile = pkgs.writeText "i3-config-file" config;
       extraSessionCommands = ''
@@ -199,19 +186,27 @@ in
     vSync = true;
   };
 
-  location.provider = "geoclue2";
+  services.redshift.enable = true;
+
+  environment.etc."xdg/gtk-3.0/settings.ini".text = ''
+    [Settings]
+    gtk-application-prefer-dark-theme = true
+    gtk-theme-name=Adwaita-dark
+    gtk-icon-theme-name=Adwaita
+    gtk-cursor-theme-size=0
+  '';
 
   # services.autorandr.enable = true;
   # services.autorandr.defaultTarget = "tv";
-  systemd.user.services.boot-autorandr = {
-    description = "Autorandr service";
-    partOf = [ "graphical-session.target" ];
-    wantedBy = [ "graphical-session.target" ];
-    serviceConfig = {
-      ExecStart = "${pkgs.autorandr}/bin/autorandr -c";
-      Type = "oneshot";
-    };
-  };
+  # systemd.user.services.boot-autorandr = {
+  #   description = "Autorandr service";
+  #   partOf = [ "graphical-session.target" ];
+  #   wantedBy = [ "graphical-session.target" ];
+  #   serviceConfig = {
+  #     ExecStart = "${pkgs.autorandr}/bin/autorandr -c";
+  #     Type = "oneshot";
+  #   };
+  # };
 
   systemd.user.services.nmapplet = {
     description = "Network Manager Agent";
