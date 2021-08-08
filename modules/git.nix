@@ -50,16 +50,18 @@
           color "Merge: "                cyan default
           color graph-commit             red  default
 
-          bind generic ;y !@sh -c "echo -n %(commit) | ${xsel}/bin/xsel --clipboard --input"
           bind generic ; none
+          bind generic ;y !@sh -c "echo -n %(commit) | ${xsel}/bin/xsel --clipboard --input"
           bind generic ;s :!git status
           bind generic ;f :!git fetch --all --prune
           bind generic ;1 :!git stash
           bind generic ;! :!git stash pop
           bind generic ;p :!git push
           bind generic ;P :!git push -f
-          bind generic ;>a :!git rebase --abort
-          bind generic ;>c :!git rebase --continue
+          bind generic ;ra :!git rebase --abort
+          bind generic ;rc :!git rebase --continue
+          bind generic ;ca :!git cherry-pick --abort
+          bind generic ;cc :!git cherry-pick --continue
           bind main    > ?git rebase -i %(commit)
           bind main    ;r ?git rebase %(branch)
           bind main    ^ ?git reset --soft %(commit)

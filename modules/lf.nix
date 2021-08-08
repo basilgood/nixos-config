@@ -11,7 +11,7 @@ with pkgs;
     cmd open ''${{
       case $(${file}/bin/file --mime-type $f -b) in
         image/svg+xml) inkscape $fx;;
-        image/*) ${qimgv}/bin/qimgv $fx;;
+        image/*) ${viewnior}/bin/viewnior $fx;;
         application/pdf) ${zathura}/bin/zathura $fx;;
         text/*|application/json) $EDITOR $fx;;
         audio/*) ${mpv}/bin/mpv $fx;;

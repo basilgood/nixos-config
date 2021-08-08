@@ -6,20 +6,20 @@ let
       # font:
       font pango:monospace 8
       # wallpaper
-      exec --no-startup-id multilockscreen -w
+      # exec --no-startup-id multilockscreen -w
       # lock:
-      bindsym $mod+l exec --no-startup-id multilockscreen -l dim
+      # bindsym $mod+l exec --no-startup-id multilockscreen -l dim
       # screenshot:
-      bindsym Print exec --no-startup-id maim -s | ${pkgs.xclip}/bin/xclip -selection clipboard -t image/png
-      bindsym $mod+Print exec --no-startup-id maim ~/Pictures/$(date +%s).jpg
+      # bindsym Print exec --no-startup-id maim -s | ${pkgs.xclip}/bin/xclip -selection clipboard -t image/png
+      # bindsym $mod+Print exec --no-startup-id maim ~/Pictures/$(date +%s).jpg
       # redshift:
       exec --no-startup-id i3-msg 'exec --no-startup-id ${pkgs.redshift}/bin/redshift-gtk' &
       # backlight
-      bindsym XF86MonBrightnessUp exec --no-startup-id brightnessctl s +10%
-      bindsym XF86MonBrightnessDown exec --no-startup-id brightnessctl s 10%-
+      # bindsym XF86MonBrightnessUp exec --no-startup-id brightnessctl s +10%
+      # bindsym XF86MonBrightnessDown exec --no-startup-id brightnessctl s 10%-
       # pactl to adjust volume in PulseAudio.
-      exec --no-startup-id ${pkgs.volumeicon}/bin/volumeicon &
-      exec --no-startup-id ${pkgs.xfce.xfce4-volumed-pulse}/bin/xfce4-volumed-pulse &
+      # exec --no-startup-id ${pkgs.volumeicon}/bin/volumeicon &
+      # exec --no-startup-id ${pkgs.xfce.xfce4-volumed-pulse}/bin/xfce4-volumed-pulse &
       # bindsym XF86AudioRaiseVolume exec --no-startup-id pactl set-sink-volume @DEFAULT_SINK@ +10%
       # bindsym XF86AudioLowerVolume exec --no-startup-id pactl set-sink-volume @DEFAULT_SINK@ -10%
       # bindsym XF86AudioMute exec --no-startup-id pactl set-sink-mute @DEFAULT_SINK@ toggle
@@ -37,7 +37,7 @@ let
       bindsym $mod+Shift+q kill
       # dmenu
       # bindsym $mod+d exec --no-startup-id dmenu_run -fn "monospace 9"
-      bindsym $mod+d exec --no-startup-id ${pkgs.rofi}/bin/rofi -modi drun#run#window -show drun -show-icons -hide-scrollbar -display-combi run -terminal alacritty -theme Arc-Dark -width 20 -lines 10
+      bindsym $mod+d exec --no-startup-id ${pkgs.j4-dmenu-desktop}/bin/j4-dmenu-desktop --term=alacritty
       # change focus
       bindsym $mod+Left focus left
       bindsym $mod+Down focus down
@@ -100,7 +100,7 @@ let
       # restart i3 inplace
       bindsym $mod+Shift+r restart
       # exit i3
-    bindsym $mod+Shift+e exec --no-startup-id rofi -show p -modi p:rofi-power-menu -theme Arc-Dark -width 20 -lines 6
+    # bindsym $mod+Shift+e exec --no-startup-id rofi -show p -modi p:rofi-power-menu -theme Arc-Dark -width 20 -lines 6
       # resize window (you can also use the mouse for that)
       mode "resize" {
         bindsym Left resize grow width 10 px or 10 ppt
@@ -129,24 +129,23 @@ let
       client.placeholder  $yellow   $blue   $yellow   $yellow   $yellow
       client.background $blue
       # status bar:
-      bar {
-        height 26
-        font pango:Monospace Regular 9
-        separator_symbol "::"
-        position bottom
-        # status_command i3status
-        status_command i3blocks
-        tray_padding 5
-        colors {
-          background $blue
-          statusline $yellow
-          separator  $green
-          focused_workspace $blue $blue $yellow
-          active_workspace  $blue $blue $yellow
-          inactive_workspace  $blue $blue $green
-          urgent_workspace  $blue $blue $grey
-        }
-      }
+      # bar {
+      #   height 26
+      #   font pango:Monospace Regular 9
+      #   separator_symbol "::"
+      #   position bottom
+      #   status_command i3blocks
+      #   tray_padding 5
+      #   colors {
+      #     background $blue
+      #     statusline $yellow
+      #     separator  $green
+      #     focused_workspace $blue $blue $yellow
+      #     active_workspace  $blue $blue $yellow
+      #     inactive_workspace  $blue $blue $green
+      #     urgent_workspace  $blue $blue $grey
+      #   }
+      # }
       for_window [window_role="(?i)(?:pop-up|setup)"]      floating enable
       for_window [title="(?i)(?:copying|deleting|moving)"] floating enable
       for_window [class=lxqt-openssh-askpass]  focus, floating enable, resize set 300 100
@@ -154,7 +153,6 @@ let
       for_window [title="Save File"] floating enable
       for_window [class="Alacritty" title="pulsemixer"]    floating enable border normal 1 resize set 500 600,move right 90px,move up 80px
       for_window [class="Chromium-browser" title="Debugging tools | Playwright - Chromium"] floating enable
-      for_window [class=Viewnior|feh|sxiw|Lxappearance|Pavucontrol] floating enable
   '';
 in
 {
@@ -166,22 +164,13 @@ in
       enable = true;
       package = pkgs.i3-gaps;
       extraPackages = with pkgs; [
-        capitaine-cursors
+        j4-dmenu-desktop
         networkmanager_dmenu
         dmenu
-        rofi
-        rofi-power-menu
         libnotify
         arandr
-        autorandr
         maim
         pulsemixer
-        volumeicon
-        i3blocks
-        multilockscreen
-        xidlehook
-        pciutils
-        sysstat
         ytfzf
       ];
       configFile = pkgs.writeText "i3-config-file" config;
@@ -197,77 +186,6 @@ in
     };
   };
 
-  environment.etc."xdg/i3blocks/config".text = ''
-    [cpu_usage]
-    command=sar 1 1 | awk '/all/{print "'"''${1:-} "'"$4"%"}'
-    interval=1
-    [memory]
-    command=free -h --giga | awk '/^Mem:/{print "'"''${1:-} "'"$3}'
-    interval=10
-    [cpu]
-    command=sensors | grep "Tdie" | awk '{print $2}'
-    interval=10
-    [gpu]
-    command=sensors | grep "edge" | awk '{print $2}'
-    interval=10
-    [time]
-    command=date '+%d-%m-%Y %H:%M'
-    interval=30
-  '';
-
-  environment.etc."xdg/gtk-3.0/settings.ini".text = ''
-    [Settings]
-    gtk-application-prefer-dark-theme = true
-    gtk-theme-name=Adwaita-dark
-    gtk-icon-theme-name=Adwaita
-    gtk-cursor-theme-name=capitaine-cursors
-    gtk-cursor-theme-size=10
-    gtk-xft-antialias=1
-    gtk-xft-hinting=1
-    gtk-xft-hintstyle=hintfull
-    gtk-xft-rgba=rgb
-  '';
-
-  environment.etc."dunst/dunstrc".text = ''
-    [global]
-    font = monospace 9
-    geometry = "300x5-30+20"
-    show_age_threshold = 60
-    word_wrap = yes
-    icon_position = left
-    max_icon_size = 32
-    corner_radius = 8
-    transparency = 10
-    padding = 24
-    horizontal_padding = 24
-    sort = yes
-    icon_folders = /run/current-system/sw/share/icons/Adwaita/16x16/devices/
-    [shortcuts]
-    close = mod4+q
-    history = mod4+n
-    [urgency_low]
-    background = "#2E3440"
-    foreground = "#D1D7E2"
-    timeout = 10
-    [urgency_normal]
-    background = "#2E3440"
-    foreground = "#D1D7E2"
-    timeout = 10
-    [urgency_critical]
-    background = "#3f2d3f"
-    foreground = "#D1D7E2"
-    timeout = 0
-  '';
-
-  systemd.user.services.dunst = {
-    enable = true;
-    description = "";
-    wantedBy = [ "default.target" ];
-    serviceConfig.Restart = "always";
-    serviceConfig.RestartSec = 2;
-    serviceConfig.ExecStart = "${pkgs.dunst}/bin/dunst";
-  };
-
   services.picom = {
     enable = true;
     fade = true;
@@ -280,6 +198,8 @@ in
     backend = "glx";
     vSync = true;
   };
+
+  location.provider = "geoclue2";
 
   # services.autorandr.enable = true;
   # services.autorandr.defaultTarget = "tv";
@@ -301,28 +221,6 @@ in
     partOf = [ "graphical-session.target" ];
     wantedBy = [ "graphical-session.target" ];
     after = [ "graphical-session-pre.target" ];
-  };
-
-  systemd.user.services.xidlehook = {
-    description = "lock and suspend";
-    wantedBy = [ "graphical-session.target" ];
-    partOf = [ "graphical-session.target" ];
-    environment = {
-      XIDLEHOOK_SOCK = "%t/xidlehook.socket";
-    };
-    serviceConfig = {
-      ExecStart = ''
-        ${pkgs.xidlehook}/bin/xidlehook \
-          --detect-sleep \
-          --not-when-fullscreen \
-          --not-when-audio \
-          --socket "$XIDLEHOOK_SOCK" \
-          --timer 300 "${pkgs.multilockscreen}/bin/multilockscreen -l dim" "" \
-          --timer 300 "systemctl suspend" ""
-      '';
-      Restart = "always";
-      Type = "simple";
-    };
   };
 
   hardware.opengl = {
