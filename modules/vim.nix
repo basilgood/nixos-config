@@ -50,6 +50,7 @@
           endfunction
           autocmd vimRc FileType netrw call s:innetrw()
           Plug 'junegunn/fzf'
+          Plug 'wookayin/fzf-ripgrep.vim'
           Plug 'junegunn/fzf.vim'
           let $FZF_DEFAULT_COMMAND='fd --type f --hidden --follow --exclude .git --exclude plugged'
           let $FZF_PREVIEW_COMMAND = 'bat --color=always --style=plain -n -- {} || cat {}'
@@ -168,7 +169,6 @@
           let g:undotree_WindowLayout = 4
           let g:undotree_SetFocusWhenToggle = 1
           let g:undotree_ShortIndicators = 1
-          Plug 'pgdouyon/vim-evanesco'
           Plug 'michaeljsmith/vim-indent-object'
           Plug 'will133/vim-dirdiff', { 'on': 'DirDiff' }
 
