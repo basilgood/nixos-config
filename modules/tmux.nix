@@ -47,8 +47,8 @@
   };
   programs.bash = {
     shellAliases = {
-      ".n" = "tmux new-session -d -s";
-      ".r" = "tmux rename-session";
+      ".," = "tmux new-session -d -s";
+      ",," = "tmux rename-session";
       ".k" = "tmux ls -F '#{session_name}' | fzf -m | xargs tmux kill-session -t";
       ".s" = "tmux kill-server";
       ".l" = "tmux ls -F '#{session_name}' | fzf | xargs tmux switch-client -t";
