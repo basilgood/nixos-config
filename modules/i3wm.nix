@@ -14,16 +14,9 @@ let
     bindsym $mod+Print exec --no-startup-id maim ~/Pictures/$(date +%s).jpg
     # redshift:
     exec --no-startup-id i3-msg 'exec --no-startup-id ${pkgs.redshift}/bin/redshift-gtk' &
-    # backlight
-    bindsym XF86MonBrightnessUp exec --no-startup-id brightnessctl s +10%
-    bindsym XF86MonBrightnessDown exec --no-startup-id brightnessctl s 10%-
     # pactl to adjust volume in PulseAudio.
     exec --no-startup-id ${pkgs.volumeicon}/bin/volumeicon &
     exec --no-startup-id ${pkgs.xfce.xfce4-volumed-pulse}/bin/xfce4-volumed-pulse &
-    # bindsym XF86AudioRaiseVolume exec --no-startup-id pactl set-sink-volume @DEFAULT_SINK@ +10%
-    # bindsym XF86AudioLowerVolume exec --no-startup-id pactl set-sink-volume @DEFAULT_SINK@ -10%
-    # bindsym XF86AudioMute exec --no-startup-id pactl set-sink-mute @DEFAULT_SINK@ toggle
-    # bindsym XF86AudioMicMute exec --no-startup-id pactl set-source-mute @DEFAULT_SOURCE@ toggle
     # Use Mouse+$mod to drag floating windows to their wanted position
     floating_modifier $mod
     # start a terminal
@@ -35,8 +28,7 @@ let
     -o background_opacity=0.9
     # kill focused window
     bindsym $mod+Shift+q kill
-    # dmenu
-    # bindsym $mod+d exec --no-startup-id dmenu_run -fn "monospace 9"
+    # launcher:
     bindsym $mod+d exec --no-startup-id rofi -modi drun#run#window -show drun -show-icons -terminal alacritty -theme DarkBlue -font "monospace 10"
     # change focus
     bindsym $mod+Left focus left
@@ -276,8 +268,6 @@ in
     vSync = true;
   };
 
-  # services.autorandr.enable = true;
-  # services.autorandr.defaultTarget = "tv";
   systemd.user.services.boot-autorandr = {
     description = "Autorandr service";
     partOf = [ "graphical-session.target" ];
