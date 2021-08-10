@@ -20,7 +20,7 @@
     nix-prefetch-scripts
     nixpkgs-fmt
     libnotify
-    xsel
+    xclip
     direnv
   ];
 }

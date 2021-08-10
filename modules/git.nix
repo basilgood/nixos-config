@@ -51,7 +51,7 @@
           color graph-commit             red  default
 
           bind generic ; none
-          bind generic ;y !@sh -c "echo -n %(commit) | ${xsel}/bin/xsel --clipboard --input"
+          bind generic ;y !@sh -c "echo -n %(commit) | ${xclip}/bin/xclip -selection clipboard"
           bind generic ;s :!git status
           bind generic ;f :!git fetch --all --prune
           bind generic ;1 :!git stash

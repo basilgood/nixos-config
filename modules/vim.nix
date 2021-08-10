@@ -164,13 +164,14 @@
           Plug 'fcpg/vim-altscreen'
           Plug 'markonm/hlyank.vim', { 'commit': '39e52017' }
           Plug 'basilgood/vim-system-copy'
+          let g:system_copy#copy_command='xclip -sel clipboard'
+          let g:system_copy#paste_command='xclip -sel clipboard -o'
           Plug 'vim-scripts/cmdline-completion'
           Plug 'mbbill/undotree'
           let g:undotree_WindowLayout = 4
           let g:undotree_SetFocusWhenToggle = 1
           let g:undotree_ShortIndicators = 1
           Plug 'michaeljsmith/vim-indent-object'
-          Plug 'will133/vim-dirdiff', { 'on': 'DirDiff' }
 
           " theme
           Plug 'basilgood/barow'
@@ -238,7 +239,6 @@
           set shiftwidth=2
           set shiftround
           set history=1000
-          set viminfo^=!
           set wildmenu
           set wildmode=list,full
           set wildignorecase
@@ -437,6 +437,7 @@
           colorscheme gruvbit
           hi LineNr guifg=#5b5346
           hi MatchParen term=reverse ctermbg=6 guifg=#fe8019 guibg=#2d3031
+          hi Search ctermfg=0 ctermbg=11 cterm=underline guifg=#db5557 guibg=NONE gui=underline
           hi ALEError guifg=NONE guibg=NONE guisp=#fb4934 gui=undercurl ctermfg=NONE ctermbg=NONE cterm=underline
           hi ALEWarning guifg=NONE guibg=NONE guisp=#fb4934 gui=undercurl ctermfg=NONE ctermbg=NONE cterm=underline
           hi ALEInfo guifg=NONE guibg=NONE guisp=#83a598 gui=undercurl ctermfg=NONE ctermbg=NONE cterm=underline
