@@ -45,13 +45,4 @@
       set -g status-right "#{?client_prefix,#[fg=black]#[bg=brightblue],#[fg=brightblue]#[bg=black]} #h"
     '';
   };
-  programs.bash = {
-    shellAliases = {
-      ".," = "tmux new-session -d -s";
-      ",," = "tmux rename-session";
-      ".k" = "tmux ls -F '#{session_name}' | fzf -m | xargs tmux kill-session -t";
-      ".s" = "tmux kill-server";
-      ".l" = "tmux ls -F '#{session_name}' | fzf | xargs tmux switch-client -t";
-    };
-  };
 }
