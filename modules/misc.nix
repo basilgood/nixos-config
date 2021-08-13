@@ -10,6 +10,7 @@
     gifski
     vokoscreen
     anydesk
+    vnote
     kotatogram-desktop
     keepassxc
     (pkgs.chromium.override {
