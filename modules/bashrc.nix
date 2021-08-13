@@ -28,20 +28,24 @@
       bind '"\e[B": history-search-forward'
       bind '"\e[3;5~":kill-word'
       bind '"\C-h": backward-kill-word'
+      stty -ixon
       HISTCONTROL=erasedups
       HISTSIZE=-1
       HISTFILESIZE=-1
       HISTIGNORE="&:[ ]*:exit:l:ls:ll:bg:fg:history*:clear:kill*:?:??"
-      update_history() {
-        history -a
-        exec {history_lock}<"$HISTFILE" && flock -x $history_lock
+      hm() {
         sed 's/[[:space:]]*$//' $HISTFILE | tac | awk '!x[$0]++' | tac | ${pkgs.moreutils}/bin/sponge $HISTFILE
-        flock -u $history_lock && unset history_lock
       }
-      PROMPT_COMMAND="update_history; $PROMPT_COMMAND"
+      PROMPT_COMMAND="history -a; $PROMPT_COMMAND"
+      if [[ :$SHELLOPTS: =~ :(vi|emacs): ]]; then
+        . ${pkgs.fzf}/share/fzf/completion.bash
+        . ${pkgs.fzf}/share/fzf/key-bindings.bash
+        . ${pkgs.git}/share/git/contrib/completion/git-completion.bash
+      fi
+      export FZF_DEFAULT_OPTS='--height 40% --layout=reverse'
+      bind -x '"\C-r": history -n; __fzf_history__'
       eval "$(${ pkgs.starship }/bin/starship init bash)"
       eval "$(${pkgs.direnv}/bin/direnv hook bash)"
-      stty -ixon
     '';
   };
 
