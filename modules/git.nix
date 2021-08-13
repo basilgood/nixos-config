@@ -63,7 +63,7 @@
           bind generic ;ca :!git cherry-pick --abort
           bind generic ;cc :!git cherry-pick --continue
           bind main    > ?git rebase -i %(commit)
-          bind main    ;r ?git rebase %(branch)
+          bind main    b ?git rebase %(branch)
           bind main    ^ ?git reset --soft %(commit)
           bind main    . ?git reset --hard %(commit)
           bind status  a !?git commit --amend
