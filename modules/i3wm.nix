@@ -25,11 +25,12 @@ let
     -o window.dynamic_padding=true \
     -o window.decorations=none \
     -o env.TERM=xterm-256color \
+    -o colors.bright.red='#fb4934' \
     -o background_opacity=0.9
     # kill focused window
     bindsym $mod+Shift+q kill
     # launcher:
-    bindsym $mod+d exec --no-startup-id rofi -modi drun#run#window -show drun -show-icons -terminal alacritty -theme DarkBlue -font "monospace 10"
+    exec --no-startup-id albert &
     # change focus
     bindsym $mod+Left focus left
     bindsym $mod+Down focus down
@@ -91,8 +92,6 @@ let
     bindsym $mod+Shift+c reload
     # restart i3 inplace
     bindsym $mod+Shift+r restart
-    # exit i3
-    bindsym $mod+Shift+e exec --no-startup-id rofi -show p -modi p:rofi-power-menu -theme DarkBlue -font "monospace 10" -lines 6 -width 10
     # resize window (you can also use the mouse for that)
     mode "resize" {
       bindsym Left resize grow width 10 px or 10 ppt
@@ -111,36 +110,36 @@ let
     gaps inner 8
     gaps outer 0
     # border colors
-    client.focused #003b5b #003b5b #ffffff #dddddd
-    client.focused_inactive #333333 #333333 #888888 #292d2e
-    client.unfocused #333333 #333333 #888888 #292d2e
-    client.urgent #2f343a #900000 #ffffff #900000c
+    client.focused          #556064 #556064 #80FFF9 #FDF6E3
+    client.focused_inactive #2F3D44 #2F3D44 #1ABC9C #454948
+    client.unfocused        #2F3D44 #2F3D44 #1ABC9C #454948
+    client.urgent           #CB4B16 #FDF6E3 #1ABC9C #268BD2
+    client.placeholder      #000000 #0c0c0c #ffffff #000000 
+    client.background       #2B2C2B
     # status bar:
     bar {
       height 26
-      font pango:Monospace Regular 9
+      font pango:monospace 9
       separator_symbol "::"
       position bottom
-      # status_command i3status
       status_command i3blocks
       tray_padding 5
       colors {
         background #1b1e26
-        statusline $yellow
-        separator  $green
-        focused_workspace #1b1e26 #1b1e26 #f0d48b
-        active_workspace  #1b1e26 #1b1e26 #f0d48b
+        statusline #9FB4CD
+        focused_workspace #1b1e26 #1b1e26 #9FB4CD
+        active_workspace  #1b1e26 #1b1e26 #B48EAD
         inactive_workspace  #1b1e26 #1b1e26 #789073
-        urgent_workspace  #1b1e26 #1b1e26 #dddddd
+        urgent_workspace  #1b1e26 #1b1e26 #BF616A
       }
     }
     for_window [window_role="(?i)(?:pop-up|setup)"] floating enable
+    for_window [title="Playwright Inspector"] floating enable
     for_window [title="(?i)(?:copying|deleting|moving)"] floating enable
     for_window [class=lxqt-openssh-askpass]  focus, floating enable, resize set 300 100
     for_window [class="^KeePassXC$"] focus, floating enable, resize set 720 480
     for_window [title="Save File"] floating enable
     for_window [title="pulsemixer"] floating enable resize set 500 600,move right 90px,move up 80px
-    for_window [class="Chromium-browser" title="Debugging tools | Playwright - Chromium"] floating enable
     for_window [class=Viewnior|feh|sxiw|Lxappearance|Pavucontrol] floating enable
   '';
 in
@@ -153,11 +152,8 @@ in
       enable = true;
       package = pkgs.i3-gaps;
       extraPackages = with pkgs; [
+        albert
         capitaine-cursors
-        networkmanager_dmenu
-        dmenu
-        rofi
-        rofi-power-menu
         libnotify
         arandr
         autorandr
@@ -187,18 +183,23 @@ in
   environment.etc."xdg/i3blocks/config".text = ''
     [cpu_usage]
     command=sar 1 1 | awk '/all/{print "'"''${1:-} "'"$4"%"}'
+    color=#9fb4cd
     interval=1
     [memory]
     command=free -h --giga | awk '/^Mem:/{print "'"''${1:-} "'"$3}'
+    color=#9fb4cd
     interval=10
     [cpu]
     command=sensors | grep "Tdie" | awk '{print $2}'
+    color=#9fb4cd
     interval=10
     [gpu]
     command=sensors | grep "edge" | awk '{print $2}'
+    color=#9fb4cd
     interval=10
     [time]
     command=date '+%d-%m-%Y %H:%M'
+    color=#9fb4cd
     interval=30
   '';
 
