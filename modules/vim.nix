@@ -250,7 +250,6 @@
           set backspace=indent,eol,start
           set laststatus=2
 
-
           " mappings
           " terminal
           let g:term_buf = 0
@@ -391,9 +390,9 @@
           autocmd vimRc BufReadPre *.md,*.markdown setlocal conceallevel=2 concealcursor=n
           autocmd vimRc FileType javascript setlocal formatoptions-=c formatoptions-=r formatoptions-=o
           autocmd vimRc BufNewFile,BufRead *.gitignore setfiletype gitignore
-          autocmd vimRc BufNewFile,BufRead config      setfiletype config
+          autocmd vimRc BufNewFile,BufRead *config      setfiletype config
           autocmd vimRc BufNewFile,BufRead *.lock      setfiletype config
-          autocmd vimRc BufNewFile,BufRead .babelrc    setfiletype json
+          autocmd vimRc BufNewFile,BufRead *.babelrc    setfiletype json
           autocmd vimRc BufNewFile,BufRead *.txt       setfiletype markdown
           autocmd vimRc BufReadPre *.json  setlocal conceallevel=0 concealcursor=
           autocmd vimRc BufReadPre *.json  setlocal formatoptions=
@@ -423,6 +422,7 @@
                 \ call system('tmux split-window -h '.<q-args>)
           command! TA TV tig --all
           command! TS TV tig status
+          cabbr %% <C-R>=expand('%:p:h')<CR>
 
           " sessions
           if empty(glob('~/.cache/vim/sessions')) > 0
