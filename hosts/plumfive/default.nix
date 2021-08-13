@@ -7,11 +7,9 @@
     # ../../modules/plasma.nix
     ../../modules/i3wm.nix
     ../../modules/bashrc.nix
-    ../../modules/fzf.nix
     ../../modules/lf.nix
     ../../modules/cli.nix
     ../../modules/misc.nix
-    # ../../modules/networking.nix
     ../../modules/media.nix
     ../../modules/programs.nix
     ../../modules/services.nix
