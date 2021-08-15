@@ -7,6 +7,7 @@
     # ../../modules/plasma.nix
     ../../modules/i3wm.nix
     ../../modules/bashrc.nix
+    ../../modules/alacritty.nix
     ../../modules/lf.nix
     ../../modules/cli.nix
     ../../modules/misc.nix
