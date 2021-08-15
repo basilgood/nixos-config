@@ -128,6 +128,7 @@
           nmap *  <Plug>(asterisk-z*)
           vmap * <Plug>(asterisk-z*)
           Plug 'tpope/vim-commentary'
+          Plug 'suy/vim-context-commentstring'
           Plug 'tpope/vim-surround'
 
           " git
@@ -159,9 +160,12 @@
           Plug 'stefandtw/quickfix-reflector.vim', { 'for': 'qf' }
           Plug 'AndrewRadev/quickpeek.vim', { 'for': 'qf' }
           autocmd vimRc FileType qf nnoremap <buffer> gp :QuickpeekToggle<cr>
-          Plug 'hauleth/asyncdo.vim'
+          Plug 'qalshidi/vim-bettergrep'
+          let g:bettergrep_no_mappings = 1
           Plug 'lambdalisue/edita.vim'
           Plug 'fcpg/vim-altscreen'
+          Plug 'romgrk/winteract.vim'
+          nmap gw :InteractiveWindow<CR>
           Plug 'markonm/hlyank.vim', { 'commit': '39e52017' }
           Plug 'basilgood/vim-system-copy'
           let g:system_copy#copy_command='xclip -sel clipboard'
@@ -307,7 +311,8 @@
           nnoremap sl :s/
           xnoremap ss :s/
           nnoremap sp vip:s/
-          nnoremap sn *Ncgn
+          " nnoremap sn z*cgn
+          nmap sn *cgn
           " c-g improved
           nnoremap <silent> <C-g> :echon '['.expand("%:p:~").']'.' [L:'.line('$').']'<Bar>echon ' ['system("git rev-parse --abbrev-ref HEAD 2>/dev/null \| tr -d '\n'")']'<CR>
           " reload syntax and nohl
@@ -407,17 +412,6 @@
           command! -bar HL echo
                 \ synIDattr(synID(line('.'),col('.'),0),'name')
                 \ synIDattr(synIDtrans(synID(line('.'),col('.'),1)),'name')
-          command! -bang -nargs=* -complete=file Make
-                \ call asyncdo#run(1, &makeprg, <f-args>)
-          command! -bang -nargs=* -complete=file LMake
-                \ call asyncdo#lrun(1, &makeprg, <f-args>)
-          command! -bang -nargs=+ -complete=file Grep
-                \ call asyncdo#run(1, {'job': &grepprg, 'errorformat': &grepformat}, <f-args>) |
-                \ let @/=split("<args>")[0] |
-                \ call feedkeys(":let &hlsearch=1\<CR>", "n") |
-                \ copen |
-                \ redraw!
-          cnoreabbrev <expr> grep  (getcmdtype() ==# ':' && getcmdline() ==# 'grep')  ? 'Grep'  : 'grep'
           command! -nargs=1 TV
                 \ call system('tmux split-window -h '.<q-args>)
           command! TA TV tig --all
