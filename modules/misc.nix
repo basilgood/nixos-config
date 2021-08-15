@@ -1,7 +1,6 @@
 { pkgs, ... }:
 {
   users.users.vasy.packages = with pkgs; [
-    alacritty
     firefox
     element-desktop
     thunderbird

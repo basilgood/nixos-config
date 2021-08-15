@@ -20,13 +20,7 @@ let
     # Use Mouse+$mod to drag floating windows to their wanted position
     floating_modifier $mod
     # start a terminal
-    bindsym $mod+Return exec --no-startup-id alacritty \
-    -o font.size=9 \
-    -o window.dynamic_padding=true \
-    -o window.decorations=none \
-    -o env.TERM=xterm-256color \
-    -o colors.bright.red='#fb4934' \
-    -o background_opacity=0.9
+    bindsym $mod+Return exec --no-startup-id alacritty
     # kill focused window
     bindsym $mod+Shift+q kill
     # launcher:
@@ -220,6 +214,7 @@ in
     [global]
     font = monospace 9
     geometry = "300x5-30+20"
+    show_indicators = no
     show_age_threshold = 60
     word_wrap = yes
     icon_position = left
