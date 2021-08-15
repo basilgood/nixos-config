@@ -18,6 +18,7 @@
     ../../modules/git.nix
     ../../modules/parsec.nix
     ../../modules/vim.nix
+    ../../modules/nvim.nix
     ../../modules/tmux.nix
     ../../modules/lxc.nix
   ];
