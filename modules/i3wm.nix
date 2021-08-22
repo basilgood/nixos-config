@@ -20,11 +20,14 @@ let
     # Use Mouse+$mod to drag floating windows to their wanted position
     floating_modifier $mod
     # start a terminal
-    bindsym $mod+Return exec --no-startup-id alacritty
+    bindsym $mod+Return exec --no-startup-id kitty
     # kill focused window
     bindsym $mod+Shift+q kill
     # launcher:
-    exec --no-startup-id albert &
+    bindsym $mod+d exec --no-startup-id rofi -theme android_notification -show drun -terminal kitty -show-icons -lines 15 -width 20 -xoffset 0 -yoffset -300 -font "monospace 15"
+    bindsym $mod+Shift+e exec --no-startup-id rofi -show p -modi p:rofi-power-menu -theme android_notification -font "monospace 10" -lines 6 -width 10
+    # workspace names
+    exec_always --no-startup-id ${pkgs.i3wsr}/bin/i3wsr
     # change focus
     bindsym $mod+Left focus left
     bindsym $mod+Down focus down
@@ -108,7 +111,7 @@ let
     client.focused_inactive #2F3D44 #2F3D44 #1ABC9C #454948
     client.unfocused        #2F3D44 #2F3D44 #1ABC9C #454948
     client.urgent           #CB4B16 #FDF6E3 #1ABC9C #268BD2
-    client.placeholder      #000000 #0c0c0c #ffffff #000000 
+    client.placeholder      #000000 #0c0c0c #ffffff #000000
     client.background       #2B2C2B
     # status bar:
     bar {
@@ -133,7 +136,7 @@ let
     for_window [class=lxqt-openssh-askpass]  focus, floating enable, resize set 300 100
     for_window [class="^KeePassXC$"] focus, floating enable, resize set 720 480
     for_window [title="Save File"] floating enable
-    for_window [title="pulsemixer"] floating enable resize set 500 600,move right 90px,move up 80px
+    for_window [title="pulsemixer"] floating enable resize set 720 400
     for_window [class=Viewnior|feh|sxiw|Lxappearance|Pavucontrol] floating enable
   '';
 in
@@ -146,7 +149,8 @@ in
       enable = true;
       package = pkgs.i3-gaps;
       extraPackages = with pkgs; [
-        albert
+        rofi
+        rofi-power-menu
         capitaine-cursors
         libnotify
         arandr
@@ -157,9 +161,9 @@ in
         i3blocks
         multilockscreen
         xidlehook
+        viewnior
         pciutils
         sysstat
-        ytfzf
       ];
       configFile = pkgs.writeText "i3-config-file" config;
       extraSessionCommands = ''
@@ -286,24 +290,21 @@ in
 
   systemd.user.services.xidlehook = {
     description = "lock and suspend";
-    wantedBy = [ "graphical-session.target" ];
     partOf = [ "graphical-session.target" ];
-    environment = {
-      XIDLEHOOK_SOCK = "%t/xidlehook.socket";
-    };
+    after = [ "graphical-session.target" ];
+    environment = { DISPLAY = ":0"; };
     serviceConfig = {
       ExecStart = ''
         ${pkgs.xidlehook}/bin/xidlehook \
-          --detect-sleep \
           --not-when-fullscreen \
           --not-when-audio \
-          --socket "$XIDLEHOOK_SOCK" \
-          --timer 300 "${pkgs.multilockscreen}/bin/multilockscreen -l dim" "" \
-          --timer 300 "systemctl suspend" ""
+          --timer 270 "${pkgs.libnotify}/bin/notify-send --urgency=critical 'Idle' 'Resuming activity'" "" \
+          --timer 30 "${pkgs.i3lock-fancy-rapid}/bin/i3lock-fancy-rapid 5 3" "" \
+          --timer 100 "systemctl suspend" ""
       '';
-      Restart = "always";
       Type = "simple";
     };
+    wantedBy = [ "graphical-session.target" ];
   };
 
   hardware.opengl = {
@@ -318,6 +319,7 @@ in
     setLdLibraryPath = true;
   };
 
+  programs.dconf.enable = true;
   programs.ssh = {
     askPassword = "${pkgs.lxqt.lxqt-openssh-askpass}/bin/lxqt-openssh-askpass";
   };
