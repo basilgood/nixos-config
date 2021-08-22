@@ -2,6 +2,7 @@
 {
   users.users.vasy.packages = with pkgs; [
     git-brunch
+    icdiff
     lazygit
     (symlinkJoin {
       name = "git-custom";
