@@ -1,6 +1,6 @@
 {...}:
 {
-  imports = [ 
+  imports = [
     ./configuration.nix
     ../../modules/nix.nix
     ../../modules/user.nix
@@ -8,6 +8,7 @@
     ../../modules/i3wm.nix
     ../../modules/bashrc.nix
     ../../modules/alacritty.nix
+    ../../modules/kitty.nix
     ../../modules/lf.nix
     ../../modules/cli.nix
     ../../modules/misc.nix
