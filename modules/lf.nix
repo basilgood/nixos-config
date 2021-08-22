@@ -52,7 +52,7 @@ with pkgs;
     cmd tar %${gnutar}/bin/tar cvf "$f.tar" "$f"
     cmd targz %${gnutar}/bin/tar cvzf "$f.tar.gz" "$f"
     cmd tarbz2 %${gnutar}/bin/tar cjvf "$f.tar.bz2" "$f"
-    cmd zip %${gzip}/bin/zip -r "$f" "$f"
+    cmd zip %${zip}/bin/zip -r "$f" "$f"
 
     map i ''${{BAT_PAGER="less -R" ${bat}/bin/bat $f}}
     map . set hidden!
