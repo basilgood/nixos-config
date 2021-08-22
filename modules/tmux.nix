@@ -34,15 +34,20 @@
       setw -g mouse on
       setw -g monitor-activity on
 
-      set-option -g status-style bg=black,fg=yellow #,attr=default
-      set-window-option -g window-status-style bg=default,fg=white #,attr=dim
-      set-window-option -g window-status-current-style bg=default,fg=brightblue #,attr=dim
-      set-window-option -g window-status-activity-style bg=black,fg=brightred
-      set-option -g message-style bg=black,fg=brightred
-      set-option -g display-panes-active-colour brightblue
-      set-option -g display-panes-colour brightred
-      set -g status-left ""
-      set -g status-right "#{?client_prefix,#[fg=black]#[bg=brightblue],#[fg=brightblue]#[bg=black]} #h"
+      set-option -wg mode-style bg="#706c27",fg="#000000"
+      set-option -g status-style bg=terminal,fg="#a89984"
+      set-option -wg window-status-style bg="#000000",fg="#7c6f64"
+      set-option -wg window-status-activity-style bg="#000000",fg="brightred"
+      set-option -wg window-status-bell-style bg="#000000",fg="#706c27"
+      set-option -wg window-status-current-style bg="#706c27",fg="#000000"
+      set-option -g pane-active-border-style fg="#706c27"
+      set-option -g pane-border-style fg="#000000"
+      set-option -g message-style bg="#706c27",fg="#000000"
+      set-option -g message-command-style bg="#a89984",fg="#000000"
+      set-option -g display-panes-active-colour "#706c27"
+      set-option -g display-panes-colour "#3C3836"
+      set-option -g status-left ""
+      set-option -g status-right "#[bg=#a89984, fg=#000000]#{?client_prefix,#[bg=#706c27],#[bg=#a89984]} #h"
     '';
   };
 }
