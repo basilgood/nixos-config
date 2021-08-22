@@ -44,6 +44,25 @@
       fi
       export FZF_DEFAULT_OPTS='--height 40% --layout=reverse'
       bind -x '"\C-r": history -n; __fzf_history__'
+      function br {
+        f=$(mktemp)
+        (
+          set +e
+          broot --outcmd "$f" "$@"
+          code=$?
+          if [ "$code" != 0 ]; then
+              rm -f "$f"
+              exit "$code"
+          fi
+        )
+        code=$?
+        if [ "$code" != 0 ]; then
+          return "$code"
+        fi
+        d=$(cat "$f")
+        rm -f "$f"
+        eval "$d"
+      }
       eval "$(${ pkgs.starship }/bin/starship init bash)"
       eval "$(${pkgs.direnv}/bin/direnv hook bash)"
     '';

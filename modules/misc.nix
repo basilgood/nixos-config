@@ -10,6 +10,7 @@
     vokoscreen
     anydesk
     vnote
+    broot
     kotatogram-desktop
     keepassxc
     (pkgs.chromium.override {
