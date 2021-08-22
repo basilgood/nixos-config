@@ -11,9 +11,11 @@
     bat
     usbutils
     bashmount
+    patool
     psmisc
     parted
     fzf
+    ytfzf
     fd
     ripgrep
     lm_sensors
