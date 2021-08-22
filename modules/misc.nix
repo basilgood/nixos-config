@@ -5,9 +5,6 @@
     element-desktop
     thunderbird
     libreoffice
-    peek
-    gifski
-    vokoscreen
     anydesk
     vnote
     broot
