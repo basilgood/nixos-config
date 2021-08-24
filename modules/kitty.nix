@@ -9,7 +9,7 @@
           cursor_blink_interval 0
           enable_audio_bell no
           scrollback_lines 10000
-          include ${inputs.kitty-themes}/themes/gruvbox_dark.conf
+          include ${inputs.kitty-themes}/themes/GruvboxMaterialDarkMedium.conf
         '';
       in
       symlinkJoin {
