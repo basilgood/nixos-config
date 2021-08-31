@@ -37,6 +37,7 @@
 
   # Add current nixpkgs checkout to /etc/nixpkgs for easy browsing
   environment.etc.nixpkgs.source = inputs.nixpkgs;
+  environment.localBinInPath = true;
 
   nixpkgs.config.allowUnfree = true;
 
