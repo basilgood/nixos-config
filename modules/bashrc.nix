@@ -63,7 +63,8 @@
         rm -f "$f"
         eval "$d"
       }
-      eval "$(${ pkgs.starship }/bin/starship init bash)"
+      eval "$(${pkgs.z-lua}/bin/z.lua --init bash enhanced once fzf)"
+      eval "$(${pkgs.starship}/bin/starship init bash)"
       eval "$(${pkgs.direnv}/bin/direnv hook bash)"
     '';
   };
