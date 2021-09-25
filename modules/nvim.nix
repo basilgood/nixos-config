@@ -67,17 +67,11 @@
                 vim.cmd([[command! -nargs=* Commits lua require('fzf-lua').git_commits()<CR>]])
                 vim.cmd([[command! -nargs=* Bcommits lua require('fzf-lua').git_bcommits()<CR>]])
                 vim.cmd([[command! -nargs=* CA lua require('fzf-lua').lsp_code_actions()<CR>]])
+                vim.cmd([[command! -nargs=* Ld lua require('fzf-lua').lsp_definitions()<CR>]])
+                vim.cmd([[command! -nargs=* Lr lua require('fzf-lua').lsp_references()<CR>]])
                 vim.cmd([[command! -nargs=* QF lua require('fzf-lua').quickfix()<CR>]])
                 vim.cmd([[nnoremap <leader>g <cmd>lua require('fzf-lua').grep_cword()<CR>]])
                 vim.cmd([[command! -nargs=* Rg lua require('fzf-lua').live_grep()<CR>]])
-              end
-            }
-            use {
-              'mileszs/ack.vim',
-              setup = function()
-                vim.g.ackprg = "rg --vimgrep"
-                vim.g.ackhighlight = 1
-                vim.cmd[[cnoreabbrev Ack Ack!]]
               end
             }
 
@@ -162,19 +156,16 @@
               'nvim-treesitter/nvim-treesitter',
               branch = '0.5-compat',
               config = function()
-              require'nvim-treesitter.configs'.setup {
-                  ensure_installed = {
-                    'javascript', 'typescript', 'jsdoc', 'json', 'html', 'css', 'bash',
-                    'lua', 'nix'
-                  },
-                  highlight = {enable = true},
-                  indent = {enable = true}
-                }
+                require'nvim-treesitter.configs'.setup {
+                    ensure_installed = {
+                      'javascript', 'typescript', 'jsdoc', 'json', 'html', 'css', 'bash',
+                      'lua', 'nix'
+                    },
+                    highlight = {enable = true, additional_vim_regex_highlighting = false},
+                    indent = {enable = true}
+                  }
               end
             }
-            use 'maxmellon/vim-jsx-pretty'
-            use 'yuezk/vim-js'
-            use { 'LnL7/vim-nix', ft = 'nix' }
 
             -- formatter
             use {
@@ -215,7 +206,6 @@
             use { 'gotchane/vim-git-commit-prefix', ft = 'gitcommit' }
             use { 'hotwatermorning/auto-git-diff', ft = 'gitcommit' }
             use { 'whiteinge/diffconflicts', event = 'BufReadPre' }
-            use { 'junegunn/gv.vim', event = 'BufReadPre' }
 
             -- misc
             use { 'gpanders/editorconfig.nvim', event = 'BufReadPre' }
@@ -245,18 +235,10 @@
                 })
               end
             }
-            use {
-              'ten3roberts/qf.nvim',
-              ft = 'qf',
-                config = function()
-                  require'qf'.setup{}
-              end
-            }
             use { 'wellle/targets.vim', event = 'BufReadPre' }
             use { 'michaeljsmith/vim-indent-object', event = 'BufReadPre' }
             use { 'tpope/vim-surround', event = 'BufReadPre' }
             use { 'tpope/vim-repeat', event = 'BufReadPre' }
-            --use { 'markonm/traces.vim', event = 'BufReadPre' }
             use { 'winston0410/cmd-parser.nvim', event = 'BufReadPre' }
             use {
               'winston0410/range-highlight.nvim',
@@ -313,37 +295,28 @@
                 vim.g.undotree_ShortIndicators = 1
               end
             }
-
-            -- theme and statusline
             use {
-              'hoob3rt/lualine.nvim',
-              event = 'VimEnter',
+              'numtostr/FTerm.nvim',
               config = function()
-                require('lualine').setup {
-                  options = {
-                    theme = 'iceberg_dark',
-                    section_separators = ''',
-                    component_separators = '''
-                  },
-                  sections = {
-                    lualine_a = {'mode'},
-                    lualine_b = {},
-                    lualine_c = {'filename'},
-                    lualine_x = {'filetype'},
-                    lualine_y = {'progress'},
-                    lualine_z = {'location'}
-                  },
-                  inactive_sections = {
-                    lualine_a = {},
-                    lualine_b = {},
-                    lualine_c = {'filename'},
-                    lualine_x = {'location'},
-                    lualine_y = {},
-                    lualine_z = {}
+                vim.cmd[[nnoremap <c-\> <CMD>lua require("FTerm").toggle()<cr>]]
+                vim.cmd[[tnoremap <c-\> <c-\><c-n><CMD>lua require("FTerm").toggle()<cr>]]
+                local fterm = require("FTerm")
+                local lazygit = fterm:new({
+                  cmd = "lazygit",
+                  dimensions = {
+                    height = 0.9,
+                    width = 0.9
                   }
-                }
+                })
+                function _G.__fterm_lazygit()
+                  lazygit:toggle()
+                end
+                vim.cmd[[command! -nargs=0 LZ :lua __fterm_lazygit()<cr>]]
               end
             }
+            -- use 'lambdalisue/edita.vim'
+
+            -- theme
             use {
               'seblj/nvim-tabline',
               event = 'BufWinEnter',
@@ -360,23 +333,8 @@
                 }
               end
             }
-            use {
-              'eddyekofo94/gruvbox-flat.nvim',
-              event = 'VimEnter',
-              config = function()
-                vim.g.gruvbox_flat_style = 'hard'
-                vim.cmd([[
-                  colorscheme gruvbox-flat
-                ]])
-                -- vim.cmd 'hi! Normal guifg=#B3B1AD guibg=#0A0E14'
-                -- vim.cmd 'hi Normal guifg=#abb2bf guibg=#1f2227'
-                vim.cmd 'hi! Todo gui=reverse'
-                vim.cmd 'hi! TabLineSel guibg=#3e445e'
-                vim.cmd 'hi! TabLinePaddingActive guibg=#3e445e'
-                vim.cmd 'hi! TabLineCloseActive guibg=#3e445e'
-                vim.cmd 'hi! Sneak guibg=NONE guifg=#fca123 gui=bold'
-              end
-            }
+            use {'basilgood/pansy', opt = true}
+            use {'kristijanhusak/vim-hybrid-material', opt = true}
           end)
 
           -- options
@@ -426,6 +384,7 @@
           vim.o.diffopt = 'internal,filler,closeoff,context:3,algorithm:patience,indent-heuristic'
           vim.o.list = true
           vim.o.listchars = 'tab:⇥ ,trail:•,nbsp:␣,extends:↦,precedes:↤'
+          vim.cmd[[set statusline=\ %<%.99f\ %y%h%w%m%r%=%-14.(%l,%c%V%)\ %L\ ]]
 
           -- mappings
           -- wrap
@@ -465,6 +424,9 @@
           vim.cmd([[cnoremap <c-x>d <CR>:d<CR>``]])
           -- numbers
           vim.cmd[[nnoremap <silent> <expr> <c-n> &relativenumber ? ':windo set norelativenumber<cr>' : ':windo set relativenumber<cr>']]
+          -- qf
+          vim.cmd[[nnoremap <silent> <C-w>z :wincmd z<bar>cclose<bar>lclose<cr>]]
+          vim.cmd[[nnoremap <expr> <C-q> getqflist({'winid' : 0}).winid ? ':cclose<cr>' : ':copen<cr>']]
 
           -- autocommands
           vim.cmd 'autocmd TextYankPost * lua vim.highlight.on_yank {higroup = "Search", timeout = 300}'
@@ -490,11 +452,10 @@
 
           -- sessions
           if vim.fn.empty(vim.fn.glob('~/.cache/sessions')) > 0 then
-          os.execute 'mkdir -p ~/.cache/sessions'
+            os.execute 'mkdir -p ~/.cache/sessions'
           end
           vim.cmd 'autocmd! VimLeavePre * execute "mksession! ~/.cache/sessions/" . split(getcwd(), "/")[-1] . ".vim"'
-          vim.cmd(
-          [[command! -nargs=0 SS :execute 'source ~/.cache/sessions/' .  split(getcwd(), '/')[-1] . '.vim']])
+          vim.cmd[[command! -nargs=0 SS :execute 'source ~/.cache/sessions/' .  split(getcwd(), '/')[-1] . '.vim']]
 
           --- commands
           vim.cmd([[command! -nargs=0 BO silent! execute "%bd|e#|bd#"]])
@@ -504,6 +465,13 @@
           vim.cmd([[command! -bar HL echo synIDattr(synID(line('.'),col('.'),0),'name')]] ..
           [[synIDattr(synIDtrans(synID(line('.'),col('.'),1)),'name')]])
           vim.cmd([[command! WW w !sudo tee % > /dev/null]])
+          vim.cmd("command! -nargs=+ -complete=file Grep lua vim.api.nvim_exec([[grep! <args> | redraw! | copen]], true)")
+
+          vim.cmd[[
+            colorscheme hybrid_material
+            autocmd ColorScheme * hi! StatusLine guibg=#02131c | hi! StatusLineNC guifg=#1c1c1c guibg=#455a64
+            autocmd ColorScheme * hi! Search guifg=#87725e guibg=#080808
+          ]]
         '';
       in
       symlinkJoin {
