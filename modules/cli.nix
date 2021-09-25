@@ -11,7 +11,7 @@
     bat
     usbutils
     bashmount
-    patool
+    atool
     psmisc
     parted
     fzf
