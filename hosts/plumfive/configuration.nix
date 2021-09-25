@@ -38,6 +38,8 @@
   # Add current nixpkgs checkout to /etc/nixpkgs for easy browsing
   environment.etc.nixpkgs.source = inputs.nixpkgs;
   environment.localBinInPath = true;
+  environment.variables.EDITOR = "nvim";
+  environment.sessionVariables.VISUAL="nvim";
 
   nixpkgs.config.allowUnfree = true;
 
