@@ -6,9 +6,9 @@ let
       # font:
       font pango:monospace 8
       # wallpaper
-      # exec --no-startup-id multilockscreen -w
+      exec --no-startup-id multilockscreen -w
       # lock:
-      # bindsym $mod+l exec --no-startup-id multilockscreen -l dim
+      bindsym $mod+l exec --no-startup-id multilockscreen -l dim
       # screenshot:
       # bindsym Print exec --no-startup-id maim -s | ${pkgs.xclip}/bin/xclip -selection clipboard -t image/png
       # bindsym $mod+Print exec --no-startup-id maim ~/Pictures/$(date +%s).jpg
@@ -18,17 +18,17 @@ let
       # Use Mouse+$mod to drag floating windows to their wanted position
       floating_modifier $mod
       # start a terminal
-      bindsym $mod+Return exec --no-startup-id alacritty \
-      -o font.size=9 \
-      -o window.dynamic_padding=true \
-      -o window.decorations=none \
-      -o env.TERM=xterm-256color \
-      -o background_opacity=0.9
+      bindsym $mod+Return exec --no-startup-id kitty
+      # -o font.size=9 \
+      # -o window.dynamic_padding=true \
+      # -o window.decorations=none \
+      # -o env.TERM=xterm-256color \
+      # -o background_opacity=0.9
       # kill focused window
       bindsym $mod+Shift+q kill
       # dmenu
       # bindsym $mod+d exec --no-startup-id dmenu_run -fn "monospace 9"
-      bindsym $mod+d exec --no-startup-id ${pkgs.j4-dmenu-desktop}/bin/j4-dmenu-desktop --term=alacritty --display-binary
+      bindsym $mod+d exec --no-startup-id ${pkgs.j4-dmenu-desktop}/bin/j4-dmenu-desktop --term=kitty --display-binary
       # change focus
       bindsym $mod+Left focus left
       bindsym $mod+Down focus down
@@ -126,6 +126,8 @@ let
       for_window [title="Save File"] floating enable
       for_window [class="Alacritty" title="pulsemixer"]    floating enable border normal 1 resize set 500 600,move right 90px,move up 80px
       for_window [class="Chromium-browser" title="Debugging tools | Playwright - Chromium"] floating enable
+      exec --no-startup-id xfce4-panel --disable-wm-check
+      exec --no-startup-id xfce4-power-manager
   '';
 in
 {
@@ -145,20 +147,14 @@ in
       package = pkgs.i3-gaps;
       extraPackages = with pkgs; [
         j4-dmenu-desktop
-        networkmanager_dmenu
-        dmenu
-        libnotify
-        libpng
-        arandr
-        maim
-        pulsemixer
+        multilockscreen
         ytfzf
         xfce.xfce4-panel
         xfce.xfce4-i3-workspaces-plugin
         xfce.xfce4-sensors-plugin
         xfce.xfce4-datetime-plugin
         xfce.xfce4-pulseaudio-plugin
-        lxrandr
+        xfce.xfce4-power-manager
       ];
       configFile = pkgs.writeText "i3-config-file" config;
       extraSessionCommands = ''
@@ -196,17 +192,15 @@ in
     gtk-cursor-theme-size=0
   '';
 
-  # services.autorandr.enable = true;
-  # services.autorandr.defaultTarget = "tv";
-  # systemd.user.services.boot-autorandr = {
-  #   description = "Autorandr service";
-  #   partOf = [ "graphical-session.target" ];
-  #   wantedBy = [ "graphical-session.target" ];
-  #   serviceConfig = {
-  #     ExecStart = "${pkgs.autorandr}/bin/autorandr -c";
-  #     Type = "oneshot";
-  #   };
-  # };
+  systemd.user.services.boot-autorandr = {
+    description = "Autorandr service";
+    partOf = [ "graphical-session.target" ];
+    wantedBy = [ "graphical-session.target" ];
+    serviceConfig = {
+      ExecStart = "${pkgs.autorandr}/bin/autorandr -c";
+      Type = "oneshot";
+    };
+  };
 
   systemd.user.services.nmapplet = {
     description = "Network Manager Agent";
