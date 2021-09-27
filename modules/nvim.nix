@@ -1,6 +1,7 @@
 { pkgs, ... }:
 {
   users.users.vasy.packages = with pkgs; [
+    neovim-remote
     nodePackages.eslint
     nodePackages.prettier
     nodePackages.typescript-language-server
@@ -465,7 +466,7 @@
           vim.cmd([[command! -bar HL echo synIDattr(synID(line('.'),col('.'),0),'name')]] ..
           [[synIDattr(synIDtrans(synID(line('.'),col('.'),1)),'name')]])
           vim.cmd([[command! WW w !sudo tee % > /dev/null]])
-          vim.cmd("command! -nargs=+ -complete=file Grep lua vim.api.nvim_exec([[grep! <args> | redraw! | copen]], true)")
+          vim.cmd("command! -nargs=+ -complete=file Grep lua vim.api.nvim_exec([[silent grep! <args> | redraw! | copen]], true)")
 
           vim.cmd[[
             colorscheme hybrid_material
