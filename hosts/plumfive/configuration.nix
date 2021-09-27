@@ -38,8 +38,10 @@
   # Add current nixpkgs checkout to /etc/nixpkgs for easy browsing
   environment.etc.nixpkgs.source = inputs.nixpkgs;
   environment.localBinInPath = true;
-  environment.variables.EDITOR = "nvim";
-  environment.sessionVariables.VISUAL="nvim";
+  environment.sessionVariables = {
+    EDITOR = "nvim";
+    VISUAL="nvr --remote-wait +'set bufhidden=wipe'";
+  };
 
   nixpkgs.config.allowUnfree = true;
 
