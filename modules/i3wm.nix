@@ -6,9 +6,9 @@ let
     # font:
     font pango:monospace 8
     # wallpaper
-    exec --no-startup-id multilockscreen -w
+    exec --no-startup-id feh --bg-scale ${../assets/wall.jpg}
     # lock:
-    bindsym $mod+l exec --no-startup-id multilockscreen -l dim
+    bindsym $mod+l exec --no-startup-id "${pkgs.i3lock-fancy-rapid}/bin/i3lock-fancy-rapid 5 3"
     # screenshot:
     bindsym Print exec --no-startup-id maim -s | ${pkgs.xclip}/bin/xclip -selection clipboard -t image/png
     bindsym $mod+Print exec --no-startup-id maim ~/Pictures/$(date +%s).jpg
@@ -16,7 +16,11 @@ let
     exec --no-startup-id i3-msg 'exec --no-startup-id ${pkgs.redshift}/bin/redshift-gtk' &
     # pactl to adjust volume in PulseAudio.
     exec --no-startup-id ${pkgs.volumeicon}/bin/volumeicon &
-    exec --no-startup-id ${pkgs.xfce.xfce4-volumed-pulse}/bin/xfce4-volumed-pulse &
+    bindsym XF86AudioLowerVolume exec --no-startup-id "pactl set-sink-mute @DEFAULT_SINK@ false; pactl set-sink-volume @DEFAULT_SINK@ -5%; notify-send 'Volume' $(pactl list sinks | grep '^[[:space:]]Volume:' | head -n $(( $SINK + 1 )) | tail -n 1 | sed -e 's,.* \([0-9][0-9]*\)%.*,\1,') --icon=dialog-information -h string:x-canonical-private-synchronous:audio-volume-change"
+    bindsym XF86AudioRaiseVolume exec --no-startup-id "pactl set-sink-mute @DEFAULT_SINK@ false; pactl set-sink-volume @DEFAULT_SINK@ +5%; notify-send 'Volume' $(pactl list sinks | grep '^[[:space:]]Volume:' | head -n $(( $SINK + 1 )) | tail -n 1 | sed -e 's,.* \([0-9][0-9]*\)%.*,\1,') --icon=dialog-information -h string:x-canonical-private-synchronous:audio-volume-change"
+    bindsym XF86AudioMute exec --no-startup-id "pactl set-sink-mute @DEFAULT_SINK@ toggle; notify-send 'Volume Muted' $(pactl list sinks | grep '^[[:space:]]Mute:' | head -n $(( $SINK + 1 )) | tail -n 1 | sed 's/Mute://' | xargs) --icon=dialog-information -h string:x-canonical-private-synchronous:audio-mute-change"
+    bindsym XF86AudioMicMute exec --no-startup-id "pactl set-source-mute @DEFAULT_SOURCE@ toggle; notify-send 'Microphone Mute Toggled' -h string:x-canonical-private-synchronous:audio-mic-mute-change"
+    # exec --no-startup-id ${pkgs.xfce.xfce4-volumed-pulse}/bin/xfce4-volumed-pulse &
     # Use Mouse+$mod to drag floating windows to their wanted position
     floating_modifier $mod
     # start a terminal
@@ -26,8 +30,6 @@ let
     # launcher:
     bindsym $mod+d exec --no-startup-id rofi -theme android_notification -show drun -terminal kitty -show-icons -lines 15 -width 20 -xoffset 0 -yoffset -300 -font "monospace 15"
     bindsym $mod+Shift+e exec --no-startup-id rofi -show p -modi p:rofi-power-menu -theme android_notification -font "monospace 10" -lines 6 -width 10
-    # workspace names
-    exec_always --no-startup-id ${pkgs.i3wsr}/bin/i3wsr
     # change focus
     bindsym $mod+Left focus left
     bindsym $mod+Down focus down
@@ -122,17 +124,15 @@ let
       status_command i3blocks
       tray_padding 5
       colors {
-        background #1b1e26
+        background #17212b
         statusline #9FB4CD
-        focused_workspace #1b1e26 #1b1e26 #9FB4CD
-        active_workspace  #1b1e26 #1b1e26 #B48EAD
-        inactive_workspace  #1b1e26 #1b1e26 #789073
-        urgent_workspace  #1b1e26 #1b1e26 #BF616A
+        separator #555555
+        active_workspace   #2c3e50 #2c3e50 #1abc9c
+        focused_workspace  #2c3e50 #2c3e50 #1abc9c
+        inactive_workspace #2c3e50 #2c3e50 #ecf0f1
+        urgent_workspace   #e74c3c #e74c3c #ecf0f1
       }
     }
-    for_window [window_role="(?i)(?:pop-up|setup)"] floating enable
-    for_window [title="Playwright Inspector"] floating enable
-    for_window [title="(?i)(?:copying|deleting|moving)"] floating enable
     for_window [class=lxqt-openssh-askpass]  focus, floating enable, resize set 300 100
     for_window [class="^KeePassXC$"] focus, floating enable, resize set 720 480
     for_window [title="Save File"] floating enable
@@ -159,7 +159,7 @@ in
         pulsemixer
         volumeicon
         i3blocks
-        multilockscreen
+        i3lock-fancy-rapid
         xidlehook
         viewnior
         pciutils
@@ -300,7 +300,7 @@ in
           --not-when-audio \
           --timer 270 "${pkgs.libnotify}/bin/notify-send --urgency=critical 'Idle' 'Resuming activity'" "" \
           --timer 30 "${pkgs.i3lock-fancy-rapid}/bin/i3lock-fancy-rapid 5 3" "" \
-          --timer 100 "systemctl suspend" ""
+          --timer 600 "systemctl suspend" ""
       '';
       Type = "simple";
     };
