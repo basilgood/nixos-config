@@ -18,6 +18,7 @@
     ytfzf
     fd
     ripgrep
+    vimv
     lm_sensors
     nix-prefetch-scripts
     nixpkgs-fmt
