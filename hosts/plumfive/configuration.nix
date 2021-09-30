@@ -40,7 +40,7 @@
   environment.localBinInPath = true;
   environment.sessionVariables = {
     EDITOR = "nvim";
-    VISUAL="nvr --remote-wait +'set bufhidden=wipe'";
+    VISUAL="nvr --remote-wait-silent +'set bufhidden=wipe'";
   };
 
   nixpkgs.config.allowUnfree = true;
