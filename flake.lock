@@ -3,15 +3,15 @@
     "kitty-themes": {
       "flake": false,
       "locked": {
-        "lastModified": 1629462067,
-        "narHash": "sha256-BGK7++7Jg1J8oMvDx0DNQOhRa9MC2QNJtYsi4UoxvmA=",
-        "owner": "kovidgoyal",
+        "lastModified": 1573943989,
+        "narHash": "sha256-DBvkVxInRhKhx5S7dzz5bcSFCf1h6A27h+lIPIXLr4U=",
+        "owner": "dexpota",
         "repo": "kitty-themes",
-        "rev": "c1fb3a3ea97140b1c004406e15a77b17bcba6123",
+        "rev": "fca3335489bdbab4cce150cb440d3559ff5400e2",
         "type": "github"
       },
       "original": {
-        "owner": "kovidgoyal",
+        "owner": "dexpota",
         "repo": "kitty-themes",
         "type": "github"
       }

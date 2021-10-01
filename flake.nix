@@ -1,7 +1,7 @@
 {
   inputs.nixpkgs.url = "github:nixos/nixpkgs/nixpkgs-unstable";
   inputs.kitty-themes = {
-    url = "github:kovidgoyal/kitty-themes";
+    url = "github:dexpota/kitty-themes";
     flake = false;
   };
   outputs = { self, ... }@inputs:
