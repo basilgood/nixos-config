@@ -4,7 +4,11 @@ let
     # set:
     set $mod Mod4
     # font:
-    font pango:monospace 8
+    font pango:Cantarell 11
+    # netork applet
+    exec --no-startup-id nm-applet
+    # autorandr
+    exec --no-startup-id ${pkgs.autorandr}/bin/autorandr -c
     # wallpaper
     exec --no-startup-id feh --bg-scale ${../assets/wall.jpg}
     # lock:
@@ -28,8 +32,9 @@ let
     # kill focused window
     bindsym $mod+Shift+q kill
     # launcher:
-    bindsym $mod+d exec --no-startup-id rofi -theme android_notification -show drun -terminal kitty -show-icons -lines 15 -width 20 -xoffset 0 -yoffset -300 -font "monospace 15"
-    bindsym $mod+Shift+e exec --no-startup-id rofi -show p -modi p:rofi-power-menu -theme android_notification -font "monospace 10" -lines 6 -width 10
+    # bindsym $mod+d exec --no-startup-id rofi -theme android_notification -show drun -terminal kitty -show-icons -lines 15 -width 20 -xoffset 0 -yoffset -300 -font "Cantarell 15"
+    bindsym $mod+d exec --no-startup-id rofi -show drun -terminal kitty -theme ${ ../assets/rofi.rasi }
+    bindsym $mod+Shift+e exec --no-startup-id rofi -show p -modi p:rofi-power-menu -theme ${ ../assets/rofi.rasi }
     # change focus
     bindsym $mod+Left focus left
     bindsym $mod+Down focus down
@@ -134,10 +139,15 @@ let
       }
     }
     for_window [class=lxqt-openssh-askpass]  focus, floating enable, resize set 300 100
-    for_window [class="^KeePassXC$"] focus, floating enable, resize set 720 480
+    for_window [class="^KeePassXC$"] focus, floating enable, resize set 1024 787
     for_window [title="Save File"] floating enable
     for_window [title="pulsemixer"] floating enable resize set 720 400
     for_window [class=Viewnior|feh|sxiw|Lxappearance|Pavucontrol] floating enable
+    for_window [title="^floatme$"] floating enable
+    for_window [title="Playwright Inspector"] floating enable
+    for_window [window_role="(?i)(?:pop-up|setup)"] floating enable
+    for_window [title="(?i)(?:copying|deleting|moving)"] floating enable
+    exec --no-startup-id ${pkgs.autorandr}/bin/autorandr -c
   '';
 in
 {
@@ -151,7 +161,9 @@ in
       extraPackages = with pkgs; [
         rofi
         rofi-power-menu
+        zafiro-icons
         capitaine-cursors
+        networkmanagerapplet
         libnotify
         arandr
         autorandr
@@ -216,33 +228,35 @@ in
 
   environment.etc."dunst/dunstrc".text = ''
     [global]
-    font = monospace 9
-    geometry = "300x5-30+20"
-    show_indicators = no
-    show_age_threshold = 60
-    word_wrap = yes
-    icon_position = left
-    max_icon_size = 32
-    corner_radius = 8
-    transparency = 10
-    padding = 24
-    horizontal_padding = 24
-    sort = yes
-    icon_folders = /run/current-system/sw/share/icons/Adwaita/16x16/devices/
+    font = Cantarell 10
+    geometry = "300x90-15+56"
+    shrink = yes
+    separator_height = 5
+    padding = 8
+    horizontal_padding = 8
+    frame_color = "#000000"
+    separator_color = "#FF000000"
+    idle_threshold = 120
+    corner_radius = 2
+    icon_folders = /run/current-system/sw/share/icons/Zafiro/apps/scalable:/run/current-system/sw/share/icons/Zafiro/devices/48
     [shortcuts]
     close = mod4+q
     history = mod4+n
     [urgency_low]
-    background = "#2E3440"
-    foreground = "#D1D7E2"
+    foreground = "#121212"
+    background = "#5656569A"
+    frame_color = "#5656569A"
+    timeout = 10
     timeout = 10
     [urgency_normal]
-    background = "#2E3440"
-    foreground = "#D1D7E2"
+    background = "#0000009A"
+    foreground = "#FEFEFE"
+    frame_color = "#0000009A"
     timeout = 10
     [urgency_critical]
-    background = "#3f2d3f"
-    foreground = "#D1D7E2"
+    background = "#cf000f9A"
+    foreground = "#f1f1f1"
+    frame_color = "#cf000f9A"
     timeout = 0
   '';
 
@@ -266,26 +280,6 @@ in
     menuOpacity = 1.0;
     backend = "glx";
     vSync = true;
-  };
-
-  systemd.user.services.boot-autorandr = {
-    description = "Autorandr service";
-    partOf = [ "graphical-session.target" ];
-    wantedBy = [ "graphical-session.target" ];
-    serviceConfig = {
-      ExecStart = "${pkgs.autorandr}/bin/autorandr -c";
-      Type = "oneshot";
-    };
-  };
-
-  systemd.user.services.nmapplet = {
-    description = "Network Manager Agent";
-    path = [ pkgs.networkmanagerapplet ];
-    serviceConfig.Restart = "on-abort";
-    serviceConfig.ExecStart = "${pkgs.networkmanagerapplet}/bin/nm-applet";
-    partOf = [ "graphical-session.target" ];
-    wantedBy = [ "graphical-session.target" ];
-    after = [ "graphical-session-pre.target" ];
   };
 
   systemd.user.services.xidlehook = {
