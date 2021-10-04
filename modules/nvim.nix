@@ -51,14 +51,14 @@
               config = function()
                 require'fzf-lua'.setup {
                   winopts = {
-                    win_height       = 0.5,
-                    win_width        = 0.75,
-                    win_row          = 0.92,
-                    win_col          = 0.50,
+                    win_height = 0.5,
+                    win_width  = 0.75,
+                    win_row    = 0.92,
+                    win_col    = 0.50,
                   },
                   files = {
-                    prompt           = 'Files❯ ',
-                    cmd              = 'fd --type f --hidden --follow --exclude .git --exclude plugged',
+                    prompt = 'Files❯ ',
+                    cmd    = 'fd --type f --hidden --follow --exclude .git --exclude plugged',
                   }
                 }
                 vim.cmd([[nnoremap <c-p> <cmd>lua require('fzf-lua').files()<CR>]])
@@ -78,16 +78,31 @@
 
             -- completion
             use {
-              'nvim-lua/completion-nvim',
-              event = 'BufReadPre',
+              'hrsh7th/nvim-compe',
               config = function()
-                vim.g.completion_enable_in_comment    = 1
-                vim.g.completion_auto_change_source   = 1
-                vim.g.completion_trigger_keyword_length = 2
+                vim.o.completeopt = "menuone,noinsert,noselect"
                 vim.cmd([[inoremap <expr> <Tab>   pumvisible() ? "\<C-n>" : "\<Tab>"]])
                 vim.cmd([[inoremap <expr> <S-Tab> pumvisible() ? "\<C-p>" : "\<S-Tab>"]])
-                vim.cmd('autocmd BufEnter * lua require"completion".on_attach()')
-                vim.api.nvim_set_option("omnifunc", "v:lua.vim.lsp.omnifunc")
+                vim.cmd[[inoremap <expr> <cr> pumvisible() ? "\<C-y>" : "\<cr>"]]
+                require "compe".setup {
+                  enabled = true,
+                  autocomplete = true,
+                  debug = false,
+                  min_length = 2,
+                  preselect = "enable",
+                  throttle_time = 80,
+                  source_timeout = 200,
+                  incomplete_delay = 400,
+                  max_abbr_width = 100,
+                  max_kind_width = 100,
+                  max_menu_width = 100,
+                  documentation = false,
+                  source = {
+                    path = true,
+                    buffer = true,
+                    nvim_lsp = true
+                  }
+                }
               end
             }
 
@@ -190,7 +205,7 @@
             -- git
             use {
               'tpope/vim-fugitive',
-              event = 'VimEnter'
+              cmd = {'Git', 'G', 'Gvdiffsplit', 'Gvsplit'}
             }
             use {
               'airblade/vim-gitgutter',
@@ -203,10 +218,10 @@
                 vim.cmd([[nmap ghp <Plug>(GitGutterPreviewHunk)]])
               end
             }
-            use { 'tpope/vim-rhubarb', event = 'BufReadPre' }
-            use { 'gotchane/vim-git-commit-prefix', ft = 'gitcommit' }
-            use { 'hotwatermorning/auto-git-diff', ft = 'gitcommit' }
-            use { 'whiteinge/diffconflicts', event = 'BufReadPre' }
+            use { 'tpope/vim-rhubarb', cmd = 'GBrowse' }
+            use 'gotchane/vim-git-commit-prefix'
+            use 'hotwatermorning/auto-git-diff'
+            use { 'whiteinge/diffconflicts', opt = true, cmd = 'DiffConflicts' }
 
             -- misc
             use { 'gpanders/editorconfig.nvim', event = 'BufReadPre' }
@@ -240,16 +255,17 @@
             use { 'michaeljsmith/vim-indent-object', event = 'BufReadPre' }
             use { 'tpope/vim-surround', event = 'BufReadPre' }
             use { 'tpope/vim-repeat', event = 'BufReadPre' }
-            use { 'winston0410/cmd-parser.nvim', event = 'BufReadPre' }
             use {
               'winston0410/range-highlight.nvim',
-              after = 'cmd-parser.nvim',
+              requires = 'winston0410/cmd-parser.nvim',
+              event = 'CmdlineEnter',
               config = function()
                 require"range-highlight".setup{}
               end
             }
             use {
-              'haya14busa/vim-edgemotion', event = 'BufReadPre',
+              'haya14busa/vim-edgemotion',
+              event = 'BufReadPre',
               config =
                 vim.cmd
                 [[
@@ -298,6 +314,7 @@
             }
             use {
               'numtostr/FTerm.nvim',
+              keys = '<c-\\>',
               config = function()
                 vim.cmd[[nnoremap <c-\> <CMD>lua require("FTerm").toggle()<cr>]]
                 vim.cmd[[tnoremap <c-\> <c-\><c-n><CMD>lua require("FTerm").toggle()<cr>]]
@@ -315,7 +332,15 @@
                 vim.cmd[[command! -nargs=0 LZ :lua __fterm_lazygit()<cr>]]
               end
             }
-            -- use 'lambdalisue/edita.vim'
+            use {
+              "folke/zen-mode.nvim",
+              cmd = 'ZenMode',
+              keys = 'gz',
+              config = function()
+                require("zen-mode").setup {window = {width=.75}}
+                vim.cmd[[nnoremap gz :ZenMode<cr>]]
+              end
+            }
 
             -- theme
             use {
@@ -335,6 +360,7 @@
               end
             }
             use {'basilgood/pansy', opt = true}
+            use {'sainnhe/everforest', opt = true}
             use {'kristijanhusak/vim-hybrid-material', opt = true}
           end)
 
@@ -428,6 +454,24 @@
           -- qf
           vim.cmd[[nnoremap <silent> <C-w>z :wincmd z<bar>cclose<bar>lclose<cr>]]
           vim.cmd[[nnoremap <expr> <C-q> getqflist({'winid' : 0}).winid ? ':cclose<cr>' : ':copen<cr>']]
+          vim.cmd[[
+            function! Listjump(list_type, direction, wrap) abort
+              try
+                exe a:list_type . a:direction
+              catch /E553/
+                exe a:list_type . a:wrap
+              catch /E42/
+                return
+              catch /E163/
+                return
+              endtry
+              normal! zz
+            endfunction
+            nnoremap <silent> ]q :call Listjump("c", "next", "first")<CR>
+            nnoremap <silent> [q :call Listjump("c", "previous", "last")<CR>
+            nnoremap <silent> ]l :call Listjump("l", "next", "first")<CR>
+            nnoremap <silent> [l :call Listjump("l", "previous", "last")<CR>
+          ]]
 
           -- autocommands
           vim.cmd 'autocmd TextYankPost * lua vim.highlight.on_yank {higroup = "Search", timeout = 300}'
@@ -466,12 +510,16 @@
           vim.cmd([[command! -bar HL echo synIDattr(synID(line('.'),col('.'),0),'name')]] ..
           [[synIDattr(synIDtrans(synID(line('.'),col('.'),1)),'name')]])
           vim.cmd([[command! WW w !sudo tee % > /dev/null]])
-          vim.cmd("command! -nargs=+ -complete=file Grep lua vim.api.nvim_exec([[silent grep! <args> | redraw! | copen]], true)")
+          vim.cmd([[command! -nargs=+ -complete=file Grep silent grep! <args> | copen]])
 
           vim.cmd[[
-            colorscheme hybrid_material
-            autocmd ColorScheme * hi! StatusLine guibg=#02131c | hi! StatusLineNC guifg=#1c1c1c guibg=#455a64
+            packadd everforest
+            let g:everforest_background = 'hard'
+            autocmd ColorScheme * hi! StatusLine guibg=#1d1d1d | hi! StatusLineNC guibg=#3f3f3f
             autocmd ColorScheme * hi! Search guifg=#87725e guibg=#080808
+            hi! StatusLine guibg=#252525
+            hi! StatusLineNC guibg=#3f3f3f
+            colorscheme everforest
           ]]
         '';
       in
