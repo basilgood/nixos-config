@@ -34,20 +34,12 @@
       setw -g mouse on
       setw -g monitor-activity on
 
-      set-option -wg mode-style bg="#706c27",fg="#000000"
-      set-option -g status-style bg=terminal,fg="#a89984"
-      set-option -wg window-status-style bg="#000000",fg="#7c6f64"
-      set-option -wg window-status-activity-style bg="#000000",fg="brightred"
-      set-option -wg window-status-bell-style bg="#000000",fg="#706c27"
-      set-option -wg window-status-current-style bg="#706c27",fg="#000000"
-      set-option -g pane-active-border-style fg="#706c27"
-      set-option -g pane-border-style fg="#000000"
-      set-option -g message-style bg="#706c27",fg="#000000"
-      set-option -g message-command-style bg="#a89984",fg="#000000"
-      set-option -g display-panes-active-colour "#706c27"
-      set-option -g display-panes-colour "#3C3836"
+      set -g status-style fg=#81A1C1,bg=#3B4252
+      set-window-option -ga window-status-activity-style fg=#3B4252,bg=#D08770
       set-option -g status-left ""
-      set-option -g status-right "#[bg=#a89984, fg=#000000]#{?client_prefix,#[bg=#706c27],#[bg=#a89984]} #h"
+      set -g status-right " #{?client_prefix,🤗,😊} "
+      set -g window-status-current-format "#[bg=#4C566A] #F#I:#W#F "
+      set -g window-status-format " #F#I:#W#F "
     '';
   };
 }

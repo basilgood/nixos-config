@@ -16,8 +16,6 @@ let
     # screenshot:
     bindsym Print exec --no-startup-id maim -s | ${pkgs.xclip}/bin/xclip -selection clipboard -t image/png
     bindsym $mod+Print exec --no-startup-id maim ~/Pictures/$(date +%s).jpg
-    # redshift:
-    exec --no-startup-id i3-msg 'exec --no-startup-id ${pkgs.redshift}/bin/redshift-gtk' &
     # pactl to adjust volume in PulseAudio.
     exec --no-startup-id ${pkgs.volumeicon}/bin/volumeicon &
     bindsym XF86AudioLowerVolume exec --no-startup-id "pactl set-sink-mute @DEFAULT_SINK@ false; pactl set-sink-volume @DEFAULT_SINK@ -5%; notify-send 'Volume' $(pactl list sinks | grep '^[[:space:]]Volume:' | head -n $(( $SINK + 1 )) | tail -n 1 | sed -e 's,.* \([0-9][0-9]*\)%.*,\1,') --icon=dialog-information -h string:x-canonical-private-synchronous:audio-volume-change"
