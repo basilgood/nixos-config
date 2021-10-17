@@ -1,12 +1,6 @@
 { pkgs, ... }:
 {
   users.users.vasy.packages = with pkgs; [
-    nodePackages.eslint
-    nodePackages.prettier
-    nodePackages.typescript-language-server
-    nodePackages.stylelint
-    vim-vint
-    shfmt
     (
       let
         vimrc = ''
@@ -38,21 +32,25 @@
           call plugpac#begin()
             Pack 'k-takata/minpac', {'type': 'opt'}
 
-            Pack 'tpope/vim-vinegar', {'type': 'opt'}
-              packadd! vim-vinegar
-              let g:netrw_altfile = 1
-              let g:netrw_preview = 1
-              let g:netrw_altv = 1
-              let g:netrw_alto = 0
-              let g:netrw_use_errorwindow = 0
-              let g:netrw_localcopydircmd = 'cp -r'
-              let g:netrw_list_hide = '^\.\.\=/\=$'
-              function! s:innetrw() abort
-                nmap <buffer><silent> <right> <cr>
-                nmap <buffer><silent> <left> -
-                nmap <buffer> <c-x> mfmx
-              endfunction
-              autocmd vimRc FileType netrw call s:innetrw()
+            let g:netrw_banner = 0
+            let g:netrw_fastbrowse = 0
+            let g:netrw_altfile = 1
+            let g:netrw_preview = 1
+            let g:netrw_altv = 1
+            let g:netrw_alto = 0
+            let g:netrw_use_errorwindow = 0
+            let g:netrw_localcopydircmd = 'cp -av'
+            function! s:opentree()
+              let fname = expand('%:t')
+              edit %:p:h
+              normal! gg
+              call search('\<'.fname.'\>')
+            endfunction
+            nnoremap - :<C-U>call <SID>opentree()<CR>
+            autocmd vimRc FileType netrw
+                \ nmap <buffer><silent> <right> <cr>
+                \ | nmap <buffer><silent> <left> -
+                \ | nmap <buffer> <c-x> mfmx
 
             Pack 'junegunn/fzf'
             Pack 'junegunn/fzf.vim'
@@ -60,12 +58,12 @@
               let $FZF_PREVIEW_COMMAND = 'bat --color=always --style=plain -n -- {} || cat {}'
               let g:fzf_layout = {'window': { 'width': 0.7, 'height': 0.4,'yoffset':0.85,'xoffset': 0.5 } }
               nnoremap <c-p> :Files<cr>
+              nnoremap <c-\> :Files %:h<cr>
               nnoremap <bs> :Buffers<cr>
 
             Pack 'dense-analysis/ale', {'type': 'opt'}
-              let g:ale_completion_enabled = 1
               packadd ale
-                " let g:ale_disable_lsp = 0
+                let g:ale_disable_lsp = 1
                 let g:ale_sign_error = '• '
                 let g:ale_sign_warning = '• '
                 let g:ale_set_highlights = 0
@@ -74,96 +72,161 @@
                 let g:ale_lint_delay = 0
                 nmap <silent> [a <Plug>(ale_previous)
                 nmap <silent> ]a <Plug>(ale_next)
+                let g:ale_javascript_prettier_options = '--single-quote --trailing-comma none --arrow-parens avoid --print-width 140'
                 let g:ale_fixers = {
-                    \   'javascript': ['eslint'],
-                    \   'typescript': ['eslint'],
+                    \ '*': ['remove_trailing_lines', 'trim_whitespace'],
+                    \   'javascript': ['prettier', 'eslint'],
+                    \   'typescript': ['prettier', 'eslint'],
                     \   'css': ['stylelint'],
                     \   'json': ['fixjson'],
                     \   'sh': ['shfmt'],
+                    \   'nix': ['nixpkgs-fmt'],
                     \ }
 
-            Pack 'prabirshrestha/vim-lsp'
-            Pack 'rhysd/vim-lsp-ale'
-              function! s:setup_lsp() abort
-                if executable('typescript-language-server')
-                  call lsp#register_server({
-                      \ 'name': 'tyepscript-language-server',
-                      \ 'cmd': { server_info -> ['typescript-language-server', '--stdio'] },
-                      \ 'allowlist': ['javascript', 'typescript']
-                      \ })
-                endif
-              endfunction
-
-              autocmd vimRc User lsp_setup call s:setup_lsp()
-              setlocal omnifunc=lsp#complete
-
-            Pack 'maralla/completor.vim', { 'branch': 'lsp_more' }
-              let g:completor_completion_delay = 200
+            " complete + lsp
+            Pack 'neoclide/coc.nvim', {'branch': 'release'}
+              let g:coc_global_extensions =[]
+              let g:coc_user_config = {}
+              let g:coc_user_config = {'diagnostic.displayByAle': v:true}
+              let g:coc_user_config['languageserver'] = {}
+              let g:coc_user_config['languageserver']['typescript-language-server'] = {
+                    \'command': 'typescript-language-server',
+                    \"args": ['--stdio'],
+                    \'rootPatterns': ['.git/', 'package.json'],
+                    \'filetypes': ['javascript', 'typescript', 'javascriptreact', 'typescriptreact']
+                  \}
               inoremap <expr> <Tab> pumvisible() ? "\<C-n>" : "\<Tab>"
               inoremap <expr> <S-Tab> pumvisible() ? "\<C-p>" : "\<S-Tab>"
-              inoremap <expr> <cr> pumvisible() ? "\<C-y>" : "\<cr>"
-              let g:completor_css_omni_trigger = '([\w-]+|@[\w-]*|[\w-]+:\s*[\w-]*)$'
-              let g:completor_scss_omni_trigger = '([\w-]+|@[\w-]*|[\w-]+:\s*[\w-]*)$'
+              inoremap <silent><expr> <cr> pumvisible() ? coc#_select_confirm() : "\<C-g>u\<CR>"
+              function! s:coc_mappings()
+                nmap <silent> <expr> K &filetype == 'vim' ? ":execute 'h '.expand('<cword>')<cr>" : ":call CocActionAsync('doHover')<cr>"
+                nmap <silent> gd <Plug>(coc-definition)
+                nmap <silent> gr <Plug>(coc-references)
+                nmap <silent> ]e <Plug>(coc-diagnostic-next)
+                nmap <silent> [e <Plug>(coc-diagnostic-prev)
+                command! -nargs=0 Format :call CocAction('format')
+              endfunction
+              autocmd FileType javascript,javascriptreact,typescript,typescriptreact silent! call <SID>coc_mappings()
 
+            " lang
             Pack 'yuezk/vim-js'
             Pack 'maxmellon/vim-jsx-pretty'
             Pack 'LnL7/vim-nix', { 'for': 'nix' }
 
             " git
-            Pack 'tpope/vim-fugitive'
+            Pack 'tpope/vim-fugitive', {'type': 'opt'}
+                packadd! vim-fugitive
+            nnoremap <leader>g :G <bar> Goyo<cr>
+
             Pack 'airblade/vim-gitgutter'
+              let g:gitgutter_grep = 'rg'
               let g:gitgutter_sign_priority = 8
               let g:gitgutter_override_sign_column_highlight = 0
+              let g:gitgutter_preview_win_floating = 1
+              let g:gitgutter_sign_added    = '▎'
+              let g:gitgutter_sign_modified = '▎'
+              let g:gitgutter_sign_removed  = '▎'
+              let g:gitgutter_sign_removed_first_line = '▔'
+              let g:gitgutter_sign_modified_removed        = '▌'
+              let g:gitgutter_sign_removed_above_and_below = '▎'
               nmap ghs <Plug>(GitGutterStageHunk)
               nmap ghu <Plug>(GitGutterUndoHunk)
               nmap ghp <Plug>(GitGutterPreviewHunk)
+
             Pack 'tpope/vim-rhubarb', {'type': 'opt'}
+                packadd! vim-rhubarb
+
             Pack 'gotchane/vim-git-commit-prefix', {'type': 'opt'}
-            Pack 'whiteinge/diffconflicts', {'for': 'gitcommit'}
-            Pack 'hotwatermorning/auto-git-diff', {'for': 'gitrebase'}
+              packadd! vim-git-commit-prefix
+
+            Pack 'samoshkin/vim-mergetool', {'type': 'opt'}
+              packadd! vim-mergetool
+
+            Pack 'hotwatermorning/auto-git-diff', {'type': 'opt'}
+              packadd! auto-git-diff
 
             "misc
             Pack 'editorconfig/editorconfig-vim'
+              let g:editorconfig_root_chdir = 1
+              let g:editorconfig_verbose    = 1
+              let g:editorconfig_blacklist  = {
+                    \ 'filetype': ['git.*', 'fugitive'],
+                    \ 'pattern': ['\.un~$']}
+            Pack 'junegunn/goyo.vim', {'type': 'opt'}
+              packadd! goyo.vim
+              let g:goyo_width = 300
+              nnoremap <expr> <leader><leader> winnr("$") == 1 ? ":Goyo<cr>:wincmd w<cr>" : ":Goyo<cr>"
             Pack 'wellle/targets.vim', {'type': 'opt'}
-            Pack 'haya14busa/is.vim', {'type': 'opt'}
+              packadd! targets.vim
+            " Pack 'pgdouyon/vim-evanesco', {'type': 'opt'}
+            " packadd! vim-evanesco
+            Pack 'haya14busa/incsearch.vim', {'type': 'opt'}
+              packadd! incsearch.vim
             Pack 'haya14busa/vim-asterisk', {'type': 'opt'}
-              map *  <Plug>(asterisk-z*)<Plug>(is-nohl-1)
-              map g* <Plug>(asterisk-gz*)<Plug>(is-nohl-1)
-              map #  <Plug>(asterisk-z#)<Plug>(is-nohl-1)
-              map g# <Plug>(asterisk-gz#)<Plug>(is-nohl-1)
+              packadd! vim-asterisk
+              map /  <Plug>(incsearch-forward)
+              map ?  <Plug>(incsearch-backward)
+              map g/ <Plug>(incsearch-stay)
+              let g:incsearch#auto_nohlsearch = 1
+              map n  <Plug>(incsearch-nohl-n)
+              map N  <Plug>(incsearch-nohl-N)
+              map *  <Plug>(incsearch-nohl0)<Plug>(asterisk-z*)
+              map #  <Plug>(incsearch-nohl0)<Plug>(asterisk-z#)
+              map g* <Plug>(incsearch-nohl0)<Plug>(asterisk-gz*)
+              map g# <Plug>(incsearch-nohl0)<Plug>(asterisk-gz#)
             Pack 'tpope/vim-commentary', {'type': 'opt'}
-            Pack 'suy/vim-context-commentstring', {'type': 'opt'}
+              packadd! vim-commentary
             Pack 'tpope/vim-surround', {'type': 'opt'}
+              packadd! vim-surround
             Pack 'tpope/vim-repeat', {'type': 'opt'}
+              packadd! vim-repeat
             Pack 'markonm/traces.vim', {'type': 'opt'}
-            Pack 'itchyny/vim-qfedit', { 'for': 'qf' }
-            Pack 'AndrewRadev/quickpeek.vim', { 'for': 'qf' }
-              autocmd vimRc FileType qf nnoremap <buffer> gp :QuickpeekToggle<cr>
-            Pack 'lambdalisue/edita.vim'
+              packadd! traces.vim
+            " Pack 'itchyny/vim-qfedit'
+            Pack 'bfrg/vim-qf-preview', { 'for': 'qf' }
+              packadd! vim-qf-preview
+              let g:qfpreview = {'number': 1, 'sign': {'text': '>>', 'texthl': 'Todo'}, 'next': 'n', 'previous': 'p'}
+              autocmd FileType qf nmap <buffer> <tab> <plug>(qf-preview-open)
             Pack 'fcpg/vim-altscreen'
-            Pack 'basilgood/vim-system-copy', {'type': 'opt'}
-              let g:system_copy#copy_command='xclip -sel clipboard'
-              let g:system_copy#paste_command='xclip -sel clipboard -o'
             Pack 'vim-scripts/cmdline-completion', {'type': 'opt'}
+              packadd! cmdline-completion
             Pack 'mbbill/undotree', {'type': 'opt'}
               let g:undotree_WindowLayout = 4
               let g:undotree_SetFocusWhenToggle = 1
               let g:undotree_ShortIndicators = 1
+              packadd! undotree
             Pack 'michaeljsmith/vim-indent-object', {'type': 'opt'}
-            Pack 'markonm/hlyank.vim', { 'rev': '39e52017f53344a4fbdac00a9153a8ca32017f43' }
+              packadd! vim-indent-object
+            Pack 'haya14busa/vim-edgemotion', {'type': 'opt'}
+              map <C-j> <Plug>(edgemotion-j)
+              map <C-k> <Plug>(edgemotion-k)
+              packadd! vim-edgemotion
+            Pack 'markonm/hlyank.vim', { 'rev': '39e52017f53344a4fbdac00a9153a8ca32017f43', 'type': 'opt' }
+              packadd! hlyank.vim
 
-            Pack 'basilgood/pansy', {'type': 'opt'}
+            Pack 'kristijanhusak/vim-hybrid-material', {'type': 'opt'}
           call plugpac#end()
 
           filetype plugin indent on
+          packadd! matchit
+          packadd! cfilter
 
           " options
+          " set term=xterm-256color
+          " set t_Co=256
+          set t_ut=
+          set t_md=
           let &t_SI.="\e[6 q"
           let &t_SR.="\e[4 q"
           let &t_EI.="\e[2 q"
+          map OA <Up>
+          map OB <Down>
+          map OC <Right>
+          map OD <Left>
 
-          set path+=**
+          set path=.,**
           set autoread autowrite autowriteall
+          set hidden
           set noswapfile
           set nowritebackup
           set undofile undodir=/tmp//,.
@@ -177,6 +240,7 @@
           set relativenumber
           set mouse=a ttymouse=sgr
           set splitright splitbelow
+          set fillchars+=vert:\│
           set virtualedit=onemore
           set scrolloff=0 sidescrolloff=10 sidescroll=1
           set sessionoptions-=options
@@ -187,6 +251,10 @@
           set updatetime=50
           set incsearch hlsearch
           set gdefault
+          if executable('rg')
+            set grepprg=rg\ --no-heading\ --vimgrep
+            set grepformat=%f:%l:%c:%m
+          endif
           set completeopt-=preview
           set completeopt+=menuone,noselect,noinsert
           " setg omnifunc=syntaxcomplete#Complete
@@ -230,7 +298,7 @@
           nnoremap } }zz
           nnoremap { {zz
           " relativenumber
-          nnoremap <silent> <expr> <c-n> &relativenumber ? ':windo set norelativenumber<cr>' : ':windo set relativenumber<cr>'
+          nnoremap <silent> <expr> <leader>n &relativenumber ? ':windo set norelativenumber<cr>' : ':windo set relativenumber<cr>'
           " close qf
           nnoremap <silent> <C-w>z :wincmd z<Bar>cclose<Bar>lclose<CR>
           " objects
@@ -243,19 +311,12 @@
           " Paste continuously.
           nnoremap ]p viw"0p
           vnoremap ]p "0p
-          " substitute.
-          nnoremap ss :%s/
-          nnoremap sl :s/
-          xnoremap ss :s/
-          nnoremap sp vip:s/
-          " nnoremap sn z*cgn
+          " substitute
           nmap sn *cgn
           " c-g improved
           nnoremap <silent> <C-g> :echon '['.expand("%:p:~").']'.' [L:'.line('$').']'<Bar>echon ' ['system("git rev-parse --abbrev-ref HEAD 2>/dev/null \| tr -d '\n'")']'<CR>
           " reload syntax and nohl
-          nnoremap <silent><expr> <C-l> empty(get(b:, 'current_syntax'))
-                \ ? "\<C-l>"
-                \ : "\<C-l>:syntax sync fromstart\<cr>:nohlsearch<cr>"
+          nnoremap <silent> <C-l> :noh<bar>diffupdate<bar>call clearmatches()<bar>syntax sync fromstart<cr><c-l>
           " execute macro
           nnoremap Q <Nop>
           nnoremap Q @q
@@ -263,9 +324,9 @@
           vnoremap Q :norm Q<cr>
           " jump to window no
           for i in range(1, 9)
-            execute 'nnoremap <silent> <space>'.i.' :'.i.'wincmd w<CR>'
+            execute 'nnoremap <silent> <space>'.i.' :'.i.'wincmd w<cr>'
           endfor
-          execute 'nnoremap <silent> <space>0 :wincmd p<CR>'
+          nnoremap <silent> <space>c :wincmd c<cr>
           " jumping
           function! Listjump(list_type, direction, wrap) abort
             try
@@ -284,27 +345,19 @@
           nnoremap <silent> ]l :call Listjump("l", "next", "first")<CR>
           nnoremap <silent> [l :call Listjump("l", "previous", "last")<CR>
 
-          " range commands
-          cnoremap <c-x>t <CR>:t'''<CR>
-          cnoremap <c-x>m <CR>:m'''<CR>
-          cnoremap <c-x>d <CR>:d<CR>``
-
           " autocmds
           " keep cursor position
-          autocmd vimRc BufReadPost *
-                \ if line("'\"") >= 1 && line("'\"") <= line("$") && &ft !~# 'commit'
-                \ |   exe "normal! g`\""
-                \ | endif
+          autocmd vimRc BufReadPost * if line("'\"") > 0 && line("'\"") <= line("$") | exe "normal g`\"" | endif
 
-          " format
+          " fix, format
           autocmd vimRc BufRead,BufNewFile *.nix command! FM silent call system('nixpkgs-fmt ' . expand('%'))
-          autocmd vimRc BufRead,BufNewFile *.js,*.jsx,*.ts,*.tsx command! FM silent call system('prettier --single-quote --trailing-comma none --arrow-parens avoid --print-width 160 --parser typescript --no-bracket-spacing true --write' . expand('%'))
-          autocmd vimRc BufRead,BufNewFile *.js,*.jsx command! Fix silent call system('eslint --fix ' . expand('%'))
-          autocmd vimRc FileType yaml command! FM silent call system('prettier --write ' . expand('%'))
+          autocmd vimRc BufRead,BufNewFile *.js,*.jsx,*.mjs command! Fix silent call system('eslint --fix ' . expand('%'))
           autocmd vimRc FileType sh command! FM silent call system('shfmt -i 2 -ci -w ' . expand('%'))
 
-          " relativenumbers
+          " quickfix
           autocmd vimRc FileType qf setlocal norelativenumber
+          " autocmd vimRc FileType qf setlocal errorformat=%f\|%l\ col\ %c\|%m
+          " autocmd vimRc FileType qf nmap <buffer> <expr> <leader>q &modifiable?':cgetbuffer<cr>':':setlocal modifiable<cr>'
 
           " help keep widow full width
           autocmd vimRc FileType qf wincmd J
@@ -342,8 +395,7 @@
           autocmd vimRc FileType git       setlocal nofoldenable
 
           " commands
-          command! -nargs=0 BO silent! execute "%bd|e#|bd#"
-          command BD bp | bd #
+          command! -nargs=1 -complete=file Rename file <args> | call delete(expand('#')) | write
           command! -nargs=0 WS %s/\s\+$// | normal! ``
           command! -nargs=0 WT %s/[^\t]\zs\t\+/ / | normal! ``
           command! WW w !sudo tee % > /dev/null
@@ -358,43 +410,29 @@
           autocmd! vimRc VimLeavePre * execute "mksession! ~/.cache/vim/sessions/" . split(getcwd(), "/")[-1] . ".vim"
           command! -nargs=0 SS :execute 'source ~/.cache/vim/sessions/' .  split(getcwd(), '/')[-1] . '.vim'
 
+          " grep
           function! Grep(...)
-            let l:output = system("rg --vimgrep ".join(a:000, " "))
-            let l:list = split(l:output, "\n")
-            let l:ql = []
-            for l:item in l:list
-              let sit = split(l:item, ":")
-              call add(l:ql,
-                  \ {"filename": sit[0], "lnum": sit[1], "col": sit[2], "text": sit[3]})
-            endfor
-            call setqflist(l:ql, 'r')
-            echo 'Grep results: '.len(l:ql)
+            return system(join([&grepprg] + [expandcmd(join(a:000, ' '))], ' '))
           endfunction
-          command! -nargs=* -complete=file Grep call Grep(<q-args>)
-          cnoreabbrev <expr> grep (getcmdtype() ==# ':' && getcmdline() ==# 'grep') ? 'Grep' : 'grep'
 
-          " plugs config
-          packadd! vim-rhubarb
-          packadd! vim-git-commit-prefix
-          packadd! diffconflicts
-          packadd! auto-git-diff
-          packadd! targets.vim
-          packadd! is.vim
-          packadd! vim-asterisk
-          packadd! vim-context-commentstring
-          packadd! vim-commentary
-          packadd! vim-surround
-          packadd! vim-repeat
-          packadd! traces.vim
-          packadd! vim-system-copy
-          packadd! cmdline-completion
-          packadd! undotree
-          packadd! vim-indent-object
+          command! -nargs=+ -complete=file -bar Grep  cgetexpr Grep(<f-args>)
+          command! -nargs=+ -complete=file -bar LGrep lgetexpr Grep(<f-args>)
+
+          cnoreabbrev <expr> grep  (getcmdtype() ==# ':' && getcmdline() ==# 'grep')  ? 'Grep'  : 'grep'
+          cnoreabbrev <expr> lgrep (getcmdtype() ==# ':' && getcmdline() ==# 'lgrep') ? 'LGrep' : 'lgrep'
+
+          autocmd vimRc QuickFixCmdPost cgetexpr cwindow
+          autocmd vimRc QuickFixCmdPost lgetexpr lwindow
 
           syntax enable
 
           set termguicolors
-          colorscheme pansy
+          set background=dark
+          colorscheme hybrid_material
+          hi Search cterm=reverse guifg=#1c1c1c
+          hi GitGutterDelete guifg=#c63939
+          hi GitGutterAdd guifg=#80bc43
+          hi GitGutterChange guifg=#c6bc4f
 
           set secure
         '';
@@ -402,10 +440,20 @@
       symlinkJoin {
         name = "vim-with-config";
         buildInputs = [ makeWrapper ];
-        paths = [ (vim_configurable.override { python = python3; }) ];
+        paths = [
+          (vim_configurable.override { python = python3; })
+          nodejs-slim
+          shfmt
+          vim-vint
+          nixpkgs-fmt
+        ];
         postBuild = ''
           wrapProgram "$out/bin/vim" \
           --add-flags "-u ${writeText "vimrc" vimrc}"
+          makeWrapper ${nodePackages.typescript-language-server}/bin/typescript-language-server $out/bin/typescript-language-server
+          makeWrapper ${nodePackages.prettier}/bin/prettier $out/bin/prettier
+          makeWrapper ${nodePackages.eslint}/bin/eslint $out/bin/eslint
+          makeWrapper ${nodePackages.stylelint}/bin/stylelint $out/bin/stylelint
         '';
       }
     )
