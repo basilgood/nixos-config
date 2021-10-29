@@ -23,19 +23,11 @@ with pkgs;
     map x $$f
     map X !$f
 
+    map <enter> shell
     cmd rename %[ -e $1 ] && printf "file exists" || mv $f $1
     map r push :rename<space>
-    map R $printf '%s\n' $fx | ${perl532Packages.vidir}/bin/vidir -
 
-    map D delete
     map <delete> delete
-
-    cmd newfold ''${{
-      set -f
-      read
-      mkdir -- "$REPLY"
-      mv -- $fx "$REPLY"
-    }}
 
     cmd extract ''${{
       set -f
@@ -59,7 +51,7 @@ with pkgs;
 
     cmd usage ''${{${coreutils}/bin/du -h -d1 | ${less}/bin/less}}
   '';
-  environment.systemPackages = [ lf ];
+  environment.systemPackages = [ lf emulsion vimv ];
 
   programs.bash = {
     shellAliases = {
