@@ -26,11 +26,10 @@
     '';
   };
 
-  location.provider = "geoclue2";
-  services.localtime.enable = true;
   time.timeZone = "Europe/Bucharest";
 
   services.earlyoom.enable = true;
+  services.fstrim.enable = true;
 
   # Copy system config to allow nixPath to find compat
   environment.etc.self.source = inputs.self;
@@ -41,6 +40,7 @@
   environment.sessionVariables = {
     EDITOR = "nvim";
     VISUAL="nvr --remote-wait-silent +'set bufhidden=wipe'";
+    BAT_THEME = "Nord";
   };
 
   nixpkgs.config.allowUnfree = true;
