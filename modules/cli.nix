@@ -25,5 +25,6 @@
     libnotify
     xclip
     direnv
+    calendar-cli
   ];
 }
