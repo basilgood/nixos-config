@@ -5,19 +5,13 @@ let
     set $mod Mod4
     # font:
     font pango:Cantarell 11
-    # netork applet
-    exec --no-startup-id nm-applet
     # autorandr
-    exec --no-startup-id ${pkgs.autorandr}/bin/autorandr -c
-    # wallpaper
-    exec --no-startup-id feh --bg-scale ${../assets/wall.jpg}
+    bindsym $mod+z exec --no-startup-id ${pkgs.autorandr}/bin/autorandr -c
     # lock:
     bindsym $mod+l exec --no-startup-id "${pkgs.i3lock-fancy-rapid}/bin/i3lock-fancy-rapid 5 3"
     # screenshot:
     bindsym Print exec --no-startup-id maim -s | ${pkgs.xclip}/bin/xclip -selection clipboard -t image/png
     bindsym $mod+Print exec --no-startup-id maim ~/Pictures/$(date +%s).jpg
-    # pactl to adjust volume in PulseAudio.
-    exec --no-startup-id ${pkgs.volumeicon}/bin/volumeicon &
     bindsym XF86AudioLowerVolume exec --no-startup-id "pactl set-sink-mute @DEFAULT_SINK@ false; pactl set-sink-volume @DEFAULT_SINK@ -5%; notify-send 'Volume' $(pactl list sinks | grep '^[[:space:]]Volume:' | head -n $(( $SINK + 1 )) | tail -n 1 | sed -e 's,.* \([0-9][0-9]*\)%.*,\1,') --icon=dialog-information -h string:x-canonical-private-synchronous:audio-volume-change"
     bindsym XF86AudioRaiseVolume exec --no-startup-id "pactl set-sink-mute @DEFAULT_SINK@ false; pactl set-sink-volume @DEFAULT_SINK@ +5%; notify-send 'Volume' $(pactl list sinks | grep '^[[:space:]]Volume:' | head -n $(( $SINK + 1 )) | tail -n 1 | sed -e 's,.* \([0-9][0-9]*\)%.*,\1,') --icon=dialog-information -h string:x-canonical-private-synchronous:audio-volume-change"
     bindsym XF86AudioMute exec --no-startup-id "pactl set-sink-mute @DEFAULT_SINK@ toggle; notify-send 'Volume Muted' $(pactl list sinks | grep '^[[:space:]]Mute:' | head -n $(( $SINK + 1 )) | tail -n 1 | sed 's/Mute://' | xargs) --icon=dialog-information -h string:x-canonical-private-synchronous:audio-mute-change"
@@ -31,7 +25,7 @@ let
     bindsym $mod+Shift+q kill
     # launcher:
     # bindsym $mod+d exec --no-startup-id rofi -theme android_notification -show drun -terminal kitty -show-icons -lines 15 -width 20 -xoffset 0 -yoffset -300 -font "Cantarell 15"
-    bindsym $mod+d exec --no-startup-id rofi -show drun -terminal kitty -theme ${ ../assets/rofi.rasi }
+    bindsym $mod+d exec --no-startup-id rofi -show drun -show-icons -terminal kitty -theme ${ ../assets/rofi.rasi }
     bindsym $mod+Shift+e exec --no-startup-id rofi -show p -modi p:rofi-power-menu -theme ${ ../assets/rofi.rasi }
     # change focus
     bindsym $mod+Left focus left
@@ -145,8 +139,17 @@ let
     for_window [title="Playwright Inspector"] floating enable
     for_window [window_role="(?i)(?:pop-up|setup)"] floating enable
     for_window [title="(?i)(?:copying|deleting|moving)"] floating enable
+    for_window [class="Gsimplecal"] geometry {"x": 1600, "y": 1, "width": 150, "height": 150}
+    for_window [title="SimpleScreenRecorder"] floating enable
+    for_window [class=Gpicview|Viewnior|feh|sxiv|Ristretto] floating enable
+    # pactl to adjust volume in PulseAudio.
+    exec --no-startup-id ${pkgs.volumeicon}/bin/volumeicon &
+    # autorandr
     exec --no-startup-id ${pkgs.autorandr}/bin/autorandr -c
+    # wallpaper
+    exec --no-startup-id ${pkgs.coreutils}/bin/sleep 1; ${pkgs.feh}/bin/feh --bg-fill ${../assets/wall.jpg}
   '';
+
 in
 {
   services.xserver.desktopManager.xterm.enable = false;
@@ -157,21 +160,22 @@ in
       enable = true;
       package = pkgs.i3-gaps;
       extraPackages = with pkgs; [
+        timg
+        feh
         rofi
         rofi-power-menu
         zafiro-icons
         capitaine-cursors
-        networkmanagerapplet
         libnotify
         arandr
         autorandr
         maim
+        gsimplecal
         pulsemixer
         volumeicon
         i3blocks
         i3lock-fancy-rapid
         xidlehook
-        viewnior
         pciutils
         sysstat
       ];
@@ -198,15 +202,15 @@ in
     color=#9fb4cd
     interval=10
     [cpu]
-    command=sensors | grep "Tdie" | awk '{print $2}'
+    command=sensors | grep "Tdie" | awk '{print "'"''${1:-} "'"$2}'
     color=#9fb4cd
     interval=10
     [gpu]
-    command=sensors | grep "edge" | awk '{print $2}'
+    command=sensors | grep "edge" | awk '{print "'"''${1:-} "'"$2}'
     color=#9fb4cd
     interval=10
     [time]
-    command=date '+%d-%m-%Y %H:%M'
+    command=date '+%a %d.%m.%Y %H:%M'
     color=#9fb4cd
     interval=30
   '';
@@ -227,7 +231,11 @@ in
   environment.etc."dunst/dunstrc".text = ''
     [global]
     font = Cantarell 10
+    max_icon_size = 32
     geometry = "300x90-15+56"
+    markup = full
+    format = "<b>%s</b>\n%b"
+    word_wrap = yes
     shrink = yes
     separator_height = 5
     padding = 8
@@ -235,8 +243,6 @@ in
     frame_color = "#000000"
     separator_color = "#FF000000"
     idle_threshold = 120
-    corner_radius = 2
-    icon_folders = /run/current-system/sw/share/icons/Zafiro/apps/scalable:/run/current-system/sw/share/icons/Zafiro/devices/48
     [shortcuts]
     close = mod4+q
     history = mod4+n
@@ -279,6 +285,15 @@ in
     backend = "glx";
     vSync = true;
   };
+
+  services.redshift.enable = true;
+  services.redshift.package = pkgs.gammastep;
+  services.redshift.executable = "/bin/gammastep-indicator";
+  location.provider = "geoclue2";
+  services.redshift.extraOptions = [ "-l 44:26" "-m randr" ];
+  services.gnome.gnome-keyring.enable = true;
+  services.gnome.at-spi2-core.enable = true;
+  services.avahi.enable = true;
 
   systemd.user.services.xidlehook = {
     description = "lock and suspend";
