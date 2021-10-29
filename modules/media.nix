@@ -10,7 +10,11 @@
     audio-recorder
     peek
     gifski
-    vokoscreen
+    simplescreenrecorder
+    shutter
+    screenkey
+    qbittorrent
+    zoom-us
   ];
 
   sound.enable = true;
