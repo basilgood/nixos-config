@@ -1,21 +1,18 @@
 { pkgs, ... }:
 {
+  programs.git.enable = true;
+  programs.git.config = {
+    user.name = "Luta Vasile";
+    user.email = "elsile69@yahoo.com";
+    core.editor = "vim";
+    init.defaultBranch = "main";
+    merge.conflictStyle = "diff3";
+  };
+
   users.users.vasy.packages = with pkgs; [
     git-brunch
     icdiff
     lazygit
-    (symlinkJoin {
-      name = "git-custom";
-      paths = [ git ];
-      buildInputs = [ makeWrapper ];
-      postBuild = ''
-        wrapProgram $out/bin/git \
-          --set-default GIT_AUTHOR_NAME 'Vasile Luta' \
-          --set-default GIT_AUTHOR_EMAIL 'elsile69@yahoo.com' \
-          --set-default GIT_COMMITTER_NAME 'Vasile Luta' \
-          --set-default GIT_COMMITTER_EMAIL 'elsile69@yahoo.com'
-      '';
-    })
     (
       let
         tigrc = ''
@@ -80,11 +77,7 @@
             mkdir -p $out/share/config/tig
             cp ${writeText "tigrc" tigrc} $out/share/config/tig/config
             wrapProgram "$out/bin/tig" \
-            --set XDG_CONFIG_HOME "$out/share/config" \
-            --set-default GIT_AUTHOR_NAME 'Vasile Luta' \
-            --set-default GIT_AUTHOR_EMAIL 'elsile69@yahoo.com' \
-            --set-default GIT_COMMITTER_NAME 'Vasile Luta' \
-            --set-default GIT_COMMITTER_EMAIL 'elsile69@yahoo.com'
+            --set XDG_CONFIG_HOME "$out/share/config"
           '';
         }
     )
