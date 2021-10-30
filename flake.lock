@@ -3,16 +3,16 @@
     "kitty-themes": {
       "flake": false,
       "locked": {
-        "lastModified": 1619960401,
-        "narHash": "sha256-/iL2AN5L2fzKT1cn06xYWCCoWdIcaeAWAxZPmVIxkaM=",
-        "owner": "bgrnwd",
-        "repo": "everforest-kitty",
-        "rev": "544ba428c55d3dac43d1dcd9ac18d2cb66a162ad",
+        "lastModified": 1617697207,
+        "narHash": "sha256-Zbmrp2sQO0upkQ6Gtt5O4SLzPhovUDQNjvM0x8v2a0g=",
+        "owner": "connorholyday",
+        "repo": "nord-kitty",
+        "rev": "3a819c1f207cd2f98a6b7c7f9ebf1c60da91c9e9",
         "type": "github"
       },
       "original": {
-        "owner": "bgrnwd",
-        "repo": "everforest-kitty",
+        "owner": "connorholyday",
+        "repo": "nord-kitty",
         "type": "github"
       }
     },

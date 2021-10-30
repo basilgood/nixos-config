@@ -36,7 +36,6 @@
       hm() {
         sed 's/[[:space:]]*$//' $HISTFILE | tac | awk '!x[$0]++' | tac | ${pkgs.moreutils}/bin/sponge $HISTFILE
       }
-      PROMPT_COMMAND="history -a; $PROMPT_COMMAND"
       if [[ :$SHELLOPTS: =~ :(vi|emacs): ]]; then
         . ${pkgs.fzf}/share/fzf/completion.bash
         . ${pkgs.fzf}/share/fzf/key-bindings.bash
@@ -44,27 +43,60 @@
       fi
       export FZF_DEFAULT_OPTS='--height 40% --layout=reverse'
       bind -x '"\C-r": history -n; __fzf_history__'
-      function br {
-        f=$(mktemp)
-        (
-          set +e
-          broot --outcmd "$f" "$@"
-          code=$?
-          if [ "$code" != 0 ]; then
-              rm -f "$f"
-              exit "$code"
-          fi
-        )
-        code=$?
-        if [ "$code" != 0 ]; then
-          return "$code"
-        fi
-        d=$(cat "$f")
-        rm -f "$f"
-        eval "$d"
-      }
       eval "$(${pkgs.z-lua}/bin/z.lua --init bash enhanced once fzf)"
-      eval "$(${pkgs.starship}/bin/starship init bash)"
+    '';
+    promptInit = ''
+      RED="\033[31m"
+      YELLOW="\033[33m"
+      BLUE="\033[34m"
+      GREEN="\033[32m"
+      RST="\[\e[0m\]"
+      PROMPT='➞'
+      JOBS='✦ '
+      NIX='❄ '
+      CONTINUED='↪︎'
+      AHEAD='⇡'
+      BEHIND='⇣'
+      DIRTY='٭'
+      STAGED='+'
+      UNTRACKED='?'
+      STASH='≡'
+      function jobs_module {
+        jobsval=$(jobs -p | wc -l)
+        [ $jobsval -ne 0 ] && echo " "$YELLOW$JOBS$RST
+      }
+      function git_module {
+        local meta
+        # branch name
+        local ref=$(git symbolic-ref --short HEAD 2>/dev/null)
+        # tag name or hash
+        [[ -n "$ref" ]] && ref=$ref || ref=$($git describe --tags --always 2>/dev/null)
+        # not a git repo
+        [[ -n "$ref" ]] || return
+        local status="$(git status --porcelain -b 2>/dev/null)"
+        [[ $status =~ ([[:cntrl:]][A-Z][A-Z\ ]\ ) ]] && meta+=$STAGED
+        [[ $status =~ ([[:cntrl:]][A-Z\ ][A-Z]\ ) ]] && meta+=$DIRTY
+        [[ $status =~ ([[:cntrl:]]\?\?\ ) ]] && meta+=$UNTRACKED
+        [[ $status =~ ahead\ ([0-9]+) ]] && meta+=$AHEAD''${BASH_REMATCH[1]}
+        [[ $status =~ behind\ ([0-9]+) ]] && meta+=$BEHIND''${BASH_REMATCH[1]}
+        [[ -e "$PWD/.git/refs/stash" ]] && meta+=$STASH
+        echo " "$GREEN$ref" "$RED$meta$RST
+      }
+      function nix_module {
+        [ -n "$IN_NIX_SHELL" ] && echo " "$BLUE$NIX$RST
+      }
+      function dir_module {
+        echo $BLUE'\W'$RST
+      }
+      function end_module {
+        echo $PROMPT" "$RST
+      }
+      function set_bash_prompt {
+        PS1='\n'$(dir_module)$(git_module)$(jobs_module)$(nix_module)
+        PS1+='\n'$(end_module)
+        PS2=$CONTINUED$RST
+      }
+      PROMPT_COMMAND='history -a; set_bash_prompt'
       eval "$(${pkgs.direnv}/bin/direnv hook bash)"
     '';
   };
