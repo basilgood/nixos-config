@@ -99,6 +99,9 @@ let
       bindsym $mod+r mode "default"
     }
     bindsym $mod+r mode "resize"
+    # notifications
+    bindsym $mod+q exec --no-startup-id dunstctl close
+    bindsym $mod+n exec --no-startup-id dunstctl history-pop
     # i3-gaps:
     for_window [class="^.*"] border pixel 2
     smart_gaps on
@@ -166,6 +169,7 @@ in
         rofi-power-menu
         zafiro-icons
         capitaine-cursors
+        dunst
         libnotify
         arandr
         autorandr
@@ -232,9 +236,9 @@ in
     [global]
     font = Cantarell 10
     max_icon_size = 32
-    geometry = "300x90-15+56"
-    markup = full
-    format = "<b>%s</b>\n%b"
+    indicate_hidden = yes
+    markup = yes
+    format = "%s %p\n%b"
     word_wrap = yes
     shrink = yes
     separator_height = 5
@@ -242,10 +246,8 @@ in
     horizontal_padding = 8
     frame_color = "#000000"
     separator_color = "#FF000000"
+    icon_path = /run/current-system/sw/share/icons/Adwaita/16x16/status/:/run/current-system/sw/share/icons/Adwaita/16x16/devices/
     idle_threshold = 120
-    [shortcuts]
-    close = mod4+q
-    history = mod4+n
     [urgency_low]
     foreground = "#121212"
     background = "#5656569A"
@@ -270,7 +272,7 @@ in
     wantedBy = [ "default.target" ];
     serviceConfig.Restart = "always";
     serviceConfig.RestartSec = 2;
-    serviceConfig.ExecStart = "${pkgs.dunst}/bin/dunst";
+    serviceConfig.ExecStart = "${pkgs.dunst}/bin/dunst -conf /etc/dunst/dunstrc";
   };
 
   services.picom = {
