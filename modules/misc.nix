@@ -2,6 +2,7 @@
 {
   users.users.vasy.packages = with pkgs; [
     firefox
+    google-chrome
     element-desktop
     thunderbird
     libreoffice
@@ -11,13 +12,13 @@
     kotatogram-desktop
     keepassxc
     (pkgs.chromium.override {
-      commandLineArgs = lib.intersperse " " ([
+      commandLineArgs = lib.intersperse " " [
         "--ignore-gpu-blacklist"
         "--enable-gpu-rasterization"
         "--use-gl=desktop"
         "--enable-accelerated-video-decode"
         "--enable-features=VaapiVideoDecoder"
-      ]);
+      ];
     })
   ];
 }
