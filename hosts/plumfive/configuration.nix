@@ -38,12 +38,15 @@
   environment.etc.nixpkgs.source = inputs.nixpkgs;
   environment.localBinInPath = true;
   environment.sessionVariables = {
-    EDITOR = "nvim";
-    VISUAL="nvr --remote-wait-silent +'set bufhidden=wipe'";
+    EDITOR = "vim";
+    VISUAL = "$EDITOR";
+    # EDITOR = "nvim";
+    # VISUAL="nvr --remote-wait-silent +'set bufhidden=wipe'";
     BAT_THEME = "Nord";
   };
 
   nixpkgs.config.allowUnfree = true;
+  nixpkgs.config.vim.ftNix = false;
 
   programs.ssh.startAgent = true;
   programs.ssh.extraConfig = ''
