@@ -10,7 +10,7 @@
   };
 
   users.users.vasy.packages = with pkgs; [
-    git-brunch
+    delta
     icdiff
     lazygit
     (
