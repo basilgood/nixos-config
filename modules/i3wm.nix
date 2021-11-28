@@ -16,7 +16,6 @@ let
     bindsym XF86AudioRaiseVolume exec --no-startup-id "pactl set-sink-mute @DEFAULT_SINK@ false; pactl set-sink-volume @DEFAULT_SINK@ +5%; notify-send 'Volume' $(pactl list sinks | grep '^[[:space:]]Volume:' | head -n $(( $SINK + 1 )) | tail -n 1 | sed -e 's,.* \([0-9][0-9]*\)%.*,\1,') --icon=dialog-information -h string:x-canonical-private-synchronous:audio-volume-change"
     bindsym XF86AudioMute exec --no-startup-id "pactl set-sink-mute @DEFAULT_SINK@ toggle; notify-send 'Volume Muted' $(pactl list sinks | grep '^[[:space:]]Mute:' | head -n $(( $SINK + 1 )) | tail -n 1 | sed 's/Mute://' | xargs) --icon=dialog-information -h string:x-canonical-private-synchronous:audio-mute-change"
     bindsym XF86AudioMicMute exec --no-startup-id "pactl set-source-mute @DEFAULT_SOURCE@ toggle; notify-send 'Microphone Mute Toggled' -h string:x-canonical-private-synchronous:audio-mic-mute-change"
-    # exec --no-startup-id ${pkgs.xfce.xfce4-volumed-pulse}/bin/xfce4-volumed-pulse &
     # Use Mouse+$mod to drag floating windows to their wanted position
     floating_modifier $mod
     # start a terminal
@@ -137,20 +136,20 @@ let
     for_window [class="^KeePassXC$"] focus, floating enable, resize set 1024 787
     for_window [title="Save File"] floating enable
     for_window [title="pulsemixer"] floating enable resize set 720 400
-    for_window [class=Viewnior|feh|sxiw|Lxappearance|Pavucontrol] floating enable
     for_window [title="^floatme$"] floating enable
     for_window [title="Playwright Inspector"] floating enable
     for_window [window_role="(?i)(?:pop-up|setup)"] floating enable
     for_window [title="(?i)(?:copying|deleting|moving)"] floating enable
-    for_window [class="Gsimplecal"] geometry {"x": 1600, "y": 1, "width": 150, "height": 150}
     for_window [title="SimpleScreenRecorder"] floating enable
-    for_window [class=Gpicview|Viewnior|feh|sxiv|Ristretto] floating enable
+    for_window [class=Gpicview|Viewnior|feh|sxiv|Ristretto|Gsimplecal] floating enable
     # pactl to adjust volume in PulseAudio.
     exec --no-startup-id ${pkgs.volumeicon}/bin/volumeicon &
     # autorandr
     exec --no-startup-id ${pkgs.autorandr}/bin/autorandr -c
     # wallpaper
     exec --no-startup-id ${pkgs.coreutils}/bin/sleep 1; ${pkgs.feh}/bin/feh --bg-fill ${../assets/wall.jpg}
+    # redshift
+    exec --no-startup-id ${pkgs.redshift}/bin/redshift-gtk -l 44:26 &
   '';
 
 in
@@ -163,8 +162,6 @@ in
       enable = true;
       package = pkgs.i3-gaps;
       extraPackages = with pkgs; [
-        timg
-        feh
         rofi
         rofi-power-menu
         zafiro-icons
@@ -180,8 +177,6 @@ in
         i3blocks
         i3lock-fancy-rapid
         xidlehook
-        pciutils
-        sysstat
       ];
       configFile = pkgs.writeText "i3-config-file" config;
       extraSessionCommands = ''
@@ -288,11 +283,6 @@ in
     vSync = true;
   };
 
-  services.redshift.enable = true;
-  services.redshift.package = pkgs.gammastep;
-  services.redshift.executable = "/bin/gammastep-indicator";
-  location.provider = "geoclue2";
-  services.redshift.extraOptions = [ "-l 44:26" "-m randr" ];
   services.gnome.gnome-keyring.enable = true;
   services.gnome.at-spi2-core.enable = true;
   services.avahi.enable = true;
