@@ -11,6 +11,7 @@
           shfmt
           vim-vint
           nixpkgs-fmt
+          statix
         ];
         postBuild = ''
           wrapProgram "$out/bin/vim"
