@@ -5,14 +5,12 @@ let
     set $mod Mod4
     # font:
     font pango:Cantarell 11
-    # hardware monitor
-    exec --no-startup-id ${pkgs.phwmon}/bin/phwmon.py &
-    # wallpaper
-    exec --no-startup-id feh --bg-scale ${../assets/wall.jpg}
+    # autorandr
+    bindsym $mod+z exec --no-startup-id ${pkgs.autorandr}/bin/autorandr -c
     # lock:
     bindsym $mod+l exec --no-startup-id "${pkgs.i3lock-fancy-rapid}/bin/i3lock-fancy-rapid 5 3"
     # redshift:
-    exec --no-startup-id i3-msg 'exec --no-startup-id ${pkgs.redshift}/bin/redshift-gtk' &
+    # exec --no-startup-id i3-msg 'exec --no-startup-id ${pkgs.redshift}/bin/redshift-gtk' &
     # Use Mouse+$mod to drag floating windows to their wanted position
     floating_modifier $mod
     # start a terminal
@@ -119,7 +117,12 @@ let
     for_window [title="SimpleScreenRecorder"] floating enable
     for_window[class="feh"] floating toggle
     for_window[class="sxiv"] floating toggle
+    #xfce
     exec --no-startup-id xfce4-panel --disable-wm-check
+    # autorandr
+    exec --no-startup-id ${pkgs.autorandr}/bin/autorandr -c
+    # wallpaper
+    exec --no-startup-id ${pkgs.coreutils}/bin/sleep 1; ${pkgs.feh}/bin/feh --bg-fill ${../assets/wall.jpg}
   '';
 in
 {
@@ -138,7 +141,7 @@ in
       enable = true;
       package = pkgs.i3-gaps;
       extraPackages = with pkgs; [
-        j4-dmenu-desktop
+        rofi
         xidlehook
         autorandr
         i3lock-fancy-rapid
@@ -147,6 +150,7 @@ in
         xfce.xfce4-sensors-plugin
         xfce.xfce4-datetime-plugin
         xfce.xfce4-pulseaudio-plugin
+        xfce.xfce4-systemload-plugin
       ];
       configFile = pkgs.writeText "i3-config-file" config;
       extraSessionCommands = ''
@@ -174,6 +178,13 @@ in
     vSync = true;
   };
 
+  services.redshift.enable = true;
+  location.provider = "geoclue2";
+  services.redshift.extraOptions = [ "-m randr" ];
+  services.gnome.gnome-keyring.enable = true;
+  services.gnome.at-spi2-core.enable = true;
+  services.avahi.enable = true;
+
   environment.etc."xdg/gtk-3.0/settings.ini".text = ''
     [Settings]
     gtk-application-prefer-dark-theme = true
@@ -181,17 +192,6 @@ in
     gtk-icon-theme-name=Adwaita
     gtk-cursor-theme-size=0
   '';
-
-  systemd.user.services.autorandr = {
-    wantedBy = [ "graphical-session.target" "sleep.target" ];
-    description = "Autorandr hook";
-    after = [ "graphical-session.target" "sleep.target"];
-    serviceConfig = {
-      ExecStart = "${pkgs.autorandr}/bin/autorandr -c";
-      Type = "oneshot";
-      RemainAfterExit = false;
-    };
-  };
 
   systemd.user.services.xidlehook = {
     description = "lock and suspend";
