@@ -1,17 +1,12 @@
 { pkgs, ... }:
 {
   users.users.vasy.packages = with pkgs; [
-    smplayer
-    mpv-with-scripts
-    play-with-mpv
-    feh
-    zathura
-    youtube-dl
+    mpv
     audio-recorder
     peek
     gifski
     simplescreenrecorder
-    shutter
+    flameshot
     screenkey
     qbittorrent
     zoom-us
