@@ -4,17 +4,29 @@
     url = "github:connorholyday/nord-kitty";
     flake = false;
   };
-  outputs = { self, ... }@inputs:
-    {
-      nixosConfigurations = {
-        plumfive = inputs.nixpkgs.lib.nixosSystem {
-          system = "x86_64-linux";
-          modules = [ ./hosts/plumfive ];
-          extraArgs = { inputs = inputs; };
+  outputs = { self, nixpkgs, ... }@inputs:
+    let
+      inherit (nixpkgs.lib) nixosSystem mapAttrs;
+      inherit (nixpkgs.legacyPackages.x86_64-linux) mkShell;
+      system = "x86_64-linux";
+      mkSystem = system: module:
+        nixosSystem {
+          specialArgs = {
+            inherit inputs;
+          };
+
+          inherit system;
+          modules = [
+            module
+            { nixpkgs.overlays = [ self.overlay ]; }
+          ];
         };
-      };
-      # Exported to allow using flake checkout as channel
-      legacyPackages.x86_64-linux =
-        (builtins.head (builtins.attrValues self.nixosConfigurations)).pkgs;
+
+      pkgs = import nixpkgs { inherit system; };
+    in
+    {
+      nixosConfigurations.plumfive = mkSystem "x86_64-linux" ./hosts/plumfive;
+      overlay = final: prev:
+        (import ./pkgs/overlay.nix inputs final prev);
     };
 }
