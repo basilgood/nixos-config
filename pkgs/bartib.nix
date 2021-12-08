@@ -2,15 +2,15 @@
 
 rustPlatform.buildRustPackage rec {
   pname = "bartib";
-  version = "64177d0c335f3283be50cac1b6fd62531cbaa15b";
+  version = "f1b60e80ce04b7fd073becd9b9a78e656a179de3";
 
   src = fetchFromGitHub {
     owner = "nikolassv";
     repo = pname;
     rev = "${version}";
-    sha256 = "sha256-p4talrApXklsygD2f0DRV1BX/jPYTYAEKCT4hUp9hhw=";
+    sha256 = "sha256-cK5Z6QbypRrIxfSLBWn1MVkfbPnjmxfdvKi0VS56ryg=";
   };
 
   doCheck = false;
-  cargoSha256 = "sha256-sJHlkleeM0627MG4qd44QUzaEoHj901iUosymYQS9ts=";
+  cargoSha256 = "sha256-+uPsyOBtz0F6i3yBoFfKaawcCTZr+YJgPjUNYwwbZVk=";
 }
