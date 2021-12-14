@@ -9,18 +9,18 @@ let
     bindsym $mod+z exec --no-startup-id ${pkgs.autorandr}/bin/autorandr -c
     # lock:
     bindsym $mod+l exec --no-startup-id "${pkgs.i3lock-fancy-rapid}/bin/i3lock-fancy-rapid 5 3"
-    # redshift:
-    # exec --no-startup-id i3-msg 'exec --no-startup-id ${pkgs.redshift}/bin/redshift-gtk' &
+    # screenshot:
+    bindsym Print exec --no-startup-id flameshot gui
+    bindsym $mod+Print exec --no-startup-id flameshot full -c
     # Use Mouse+$mod to drag floating windows to their wanted position
     floating_modifier $mod
     # start a terminal
     bindsym $mod+Return exec --no-startup-id kitty
     # kill focused window
     bindsym $mod+Shift+q kill
-    # dmenu
-    # bindsym $mod+d exec --no-startup-id ${pkgs.j4-dmenu-desktop}/bin/j4-dmenu-desktop --term=kitty --display-binary
-    # bindsym $mod+d exec --no-startup-id ${pkgs.nwg-launchers}/bin/nwggrid
-    bindsym $mod+d exec --no-startup-id ${pkgs.rofi}/bin/rofi -show drun -terminal kitty -theme ${ ../assets/rofi.rasi }
+    # launcher:
+    bindsym $mod+d exec --no-startup-id rofi -show drun -show-icons -terminal kitty -theme ${ ../assets/rofi.rasi }
+    bindsym $mod+Shift+e exec --no-startup-id rofi -show p -modi p:rofi-power-menu -theme ${ ../assets/rofi.rasi }
     # change focus
     bindsym $mod+Left focus left
     bindsym $mod+Down focus down
@@ -82,8 +82,6 @@ let
     bindsym $mod+Shift+c reload
     # restart i3 inplace
     bindsym $mod+Shift+r restart
-    # exit i3
-    bindsym $mod+Shift+e exec --no-startup-id xfce4-session-logout
     # resize window (you can also use the mouse for that)
     mode "resize" {
       bindsym Left resize grow width 10 px or 10 ppt
@@ -112,6 +110,9 @@ let
     for_window [title="(?i)(?:copying|deleting|moving)"] floating enable
     for_window [class=lxqt-openssh-askpass]  focus, floating enable, resize set 300 100
     for_window [class="^KeePassXC$"] focus, floating enable, resize set 720 480
+    for_window [title="Task Manager"] floating enable resize set 720 600
+    for_window [class="Xfce4-appfinder"] floating enable resize set 720 600
+    for_window [title="Thunar"] floating enable resize set 720 480
     for_window [title="Save File"] floating enable
     for_window [title="Playwright Inspector"] floating enable
     for_window [title="SimpleScreenRecorder"] floating enable
@@ -119,6 +120,7 @@ let
     for_window[class="sxiv"] floating toggle
     #xfce
     exec --no-startup-id xfce4-panel --disable-wm-check
+    exec --no-startup-id xfce4-taskmanager --start-hidden
     # autorandr
     exec --no-startup-id ${pkgs.autorandr}/bin/autorandr -c
     # wallpaper
@@ -142,6 +144,7 @@ in
       package = pkgs.i3-gaps;
       extraPackages = with pkgs; [
         rofi
+        rofi-power-menu
         xidlehook
         autorandr
         i3lock-fancy-rapid
@@ -191,6 +194,10 @@ in
     gtk-theme-name=Adwaita-dark
     gtk-icon-theme-name=Adwaita
     gtk-cursor-theme-size=0
+    gtk-xft-antialias=1
+    gtk-xft-hinting=1
+    gtk-xft-hintstyle=hintslight
+    gtk-xft-rgba=rgb
   '';
 
   systemd.user.services.xidlehook = {
