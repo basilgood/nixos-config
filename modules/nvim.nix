@@ -10,6 +10,8 @@
           shfmt
           vim-vint
           nixpkgs-fmt
+          statix
+          stylua
           gcc
         ];
         postBuild = ''
