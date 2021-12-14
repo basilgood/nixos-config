@@ -1,11 +1,9 @@
 { pkgs, ... }:
 {
   users.users.vasy.packages = with pkgs; [
-    emacs
-    tree-sitter
+    deno
     wezterm
     bartib
-    klog
     wget
     archivemount
     unzip
@@ -43,7 +41,6 @@
     pciutils
     sysstat
   ];
-
 
   environment.sessionVariables = {
     BARTIB_FILE = "$HOME/.activities";
