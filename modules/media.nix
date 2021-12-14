@@ -16,5 +16,6 @@
   hardware.pulseaudio = {
     enable = true;
     support32Bit = true;
+    extraConfig = "load-module module-dbus-protocol";
   };
 }
