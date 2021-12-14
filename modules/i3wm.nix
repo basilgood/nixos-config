@@ -12,10 +12,10 @@ let
     # screenshot:
     bindsym Print exec --no-startup-id maim -s | ${pkgs.xclip}/bin/xclip -selection clipboard -t image/png
     bindsym $mod+Print exec --no-startup-id maim ~/Pictures/$(date +%s).jpg
-    bindsym XF86AudioLowerVolume exec --no-startup-id "pactl set-sink-mute @DEFAULT_SINK@ false; pactl set-sink-volume @DEFAULT_SINK@ -5%; notify-send 'Volume' $(pactl list sinks | grep '^[[:space:]]Volume:' | head -n $(( $SINK + 1 )) | tail -n 1 | sed -e 's,.* \([0-9][0-9]*\)%.*,\1,') --icon=dialog-information -h string:x-canonical-private-synchronous:audio-volume-change"
-    bindsym XF86AudioRaiseVolume exec --no-startup-id "pactl set-sink-mute @DEFAULT_SINK@ false; pactl set-sink-volume @DEFAULT_SINK@ +5%; notify-send 'Volume' $(pactl list sinks | grep '^[[:space:]]Volume:' | head -n $(( $SINK + 1 )) | tail -n 1 | sed -e 's,.* \([0-9][0-9]*\)%.*,\1,') --icon=dialog-information -h string:x-canonical-private-synchronous:audio-volume-change"
-    bindsym XF86AudioMute exec --no-startup-id "pactl set-sink-mute @DEFAULT_SINK@ toggle; notify-send 'Volume Muted' $(pactl list sinks | grep '^[[:space:]]Mute:' | head -n $(( $SINK + 1 )) | tail -n 1 | sed 's/Mute://' | xargs) --icon=dialog-information -h string:x-canonical-private-synchronous:audio-mute-change"
-    bindsym XF86AudioMicMute exec --no-startup-id "pactl set-source-mute @DEFAULT_SOURCE@ toggle; notify-send 'Microphone Mute Toggled' -h string:x-canonical-private-synchronous:audio-mic-mute-change"
+    bindsym XF86AudioLowerVolume exec --no-startup-id "pactl set-sink-mute @DEFAULT_SINK@ false; pactl set-sink-volume @DEFAULT_SINK@ -5%"
+    bindsym XF86AudioRaiseVolume exec --no-startup-id "pactl set-sink-mute @DEFAULT_SINK@ false; pactl set-sink-volume @DEFAULT_SINK@ +5%"
+    bindsym XF86AudioMute exec --no-startup-id "pactl set-sink-mute @DEFAULT_SINK@ toggle"
+    bindsym XF86AudioMicMute exec --no-startup-id "pactl set-source-mute @DEFAULT_SOURCE@ toggle"
     # Use Mouse+$mod to drag floating windows to their wanted position
     floating_modifier $mod
     # start a terminal
@@ -23,7 +23,6 @@ let
     # kill focused window
     bindsym $mod+Shift+q kill
     # launcher:
-    # bindsym $mod+d exec --no-startup-id rofi -theme android_notification -show drun -terminal kitty -show-icons -lines 15 -width 20 -xoffset 0 -yoffset -300 -font "Cantarell 15"
     bindsym $mod+d exec --no-startup-id rofi -show drun -show-icons -terminal kitty -theme ${ ../assets/rofi.rasi }
     bindsym $mod+Shift+e exec --no-startup-id rofi -show p -modi p:rofi-power-menu -theme ${ ../assets/rofi.rasi }
     # change focus
@@ -141,15 +140,16 @@ let
     for_window [window_role="(?i)(?:pop-up|setup)"] floating enable
     for_window [title="(?i)(?:copying|deleting|moving)"] floating enable
     for_window [title="SimpleScreenRecorder"] floating enable
-    for_window [class=Gpicview|Viewnior|feh|sxiv|Ristretto|Gsimplecal] floating enable
+    for_window [class=feh|sxiv] floating enable
     # pactl to adjust volume in PulseAudio.
     exec --no-startup-id ${pkgs.volumeicon}/bin/volumeicon &
+    exec --no-startup-id ${pkgs.volnoti-dbus}/bin/volnoti-dbus $
     # autorandr
     exec --no-startup-id ${pkgs.autorandr}/bin/autorandr -c
     # wallpaper
     exec --no-startup-id ${pkgs.coreutils}/bin/sleep 1; ${pkgs.feh}/bin/feh --bg-fill ${../assets/wall.jpg}
     # redshift
-    exec --no-startup-id ${pkgs.redshift}/bin/redshift-gtk -l 44:26 &
+    # exec --no-startup-id ${pkgs.redshift}/bin/redshift-gtk -l 44:26 &
   '';
 
 in
@@ -167,13 +167,12 @@ in
         zafiro-icons
         capitaine-cursors
         dunst
-        libnotify
         arandr
         autorandr
         maim
-        gsimplecal
         pulsemixer
         volumeicon
+        volnoti-dbus
         i3blocks
         i3lock-fancy-rapid
         xidlehook
@@ -286,6 +285,7 @@ in
   services.gnome.gnome-keyring.enable = true;
   services.gnome.at-spi2-core.enable = true;
   services.avahi.enable = true;
+  services.dbus.packages = [ pkgs.flameshot pkgs.volnoti-dbus ];
 
   systemd.user.services.xidlehook = {
     description = "lock and suspend";
