@@ -1,7 +1,7 @@
 { pkgs, ... }:
 {
   users.users.vasy.packages = with pkgs; [
-    firefox
+    brave
     google-chrome
     element-desktop
     thunderbird
@@ -9,7 +9,7 @@
     anydesk
     vnote
     broot
-    kotatogram-desktop
+    tdesktop
     keepassxc
     (pkgs.chromium.override {
       commandLineArgs = lib.intersperse " " [
