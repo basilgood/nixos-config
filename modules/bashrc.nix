@@ -113,6 +113,11 @@
         PS2=$CONTINUED$RST
       }
       PROMPT_COMMAND='history -a; set_bash_prompt'
+      bash_history_file=$(mktemp "$USER"_bash_historyXXXXXX)
+      awk 'NR == FNR { a[$0]++; next; }; ++b[$0] == a[$0]' \
+        "$HOME/.bash_history" "$HOME/.bash_history" > "$bash_history_file"
+      mv "$bash_history_file" "$HOME/.bash_history"
+      unset bash_history_file
       eval "$(${pkgs.direnv}/bin/direnv hook bash)"
     '';
   };
