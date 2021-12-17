@@ -111,6 +111,7 @@ let
     for_window [class=lxqt-openssh-askpass]  focus, floating enable, resize set 300 100
     for_window [class="^KeePassXC$"] focus, floating enable, resize set 720 480
     for_window [title="Task Manager"] floating enable resize set 720 600
+    for_window [title="Volume Control"] floating enable resize set 720 600
     for_window [class="Xfce4-appfinder"] floating enable resize set 720 600
     for_window [title="Thunar"] floating enable resize set 720 480
     for_window [title="Save File"] floating enable
@@ -147,6 +148,8 @@ in
         rofi-power-menu
         xidlehook
         autorandr
+        arandr
+        lxrandr
         i3lock-fancy-rapid
         xfce.xfce4-panel
         xfce.xfce4-i3-workspaces-plugin
