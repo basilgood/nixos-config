@@ -5,8 +5,8 @@ _:
     ../../modules/nix.nix
     ../../modules/user.nix
     # ../../modules/plasma.nix
-    # ../../modules/i3wm.nix
-    ../../modules/i3xfce.nix
+    ../../modules/i3wm.nix
+    # ../../modules/i3xfce.nix
     ../../modules/bashrc.nix
     ../../modules/alacritty.nix
     ../../modules/kitty.nix
