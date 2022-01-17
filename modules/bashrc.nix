@@ -34,9 +34,6 @@
       HISTSIZE=-1
       HISTFILESIZE=-1
       HISTIGNORE="&:[ ]*:exit:l:ls:ll:bg:fg:history*:clear:kill*:?:??"
-      hm() {
-        sed 's/[[:space:]]*$//' $HISTFILE | tac | awk '!x[$0]++' | tac | ${pkgs.moreutils}/bin/sponge $HISTFILE
-      }
       if [[ :$SHELLOPTS: =~ :(vi|emacs): ]]; then
         . ${pkgs.fzf}/share/fzf/completion.bash
         . ${pkgs.fzf}/share/fzf/key-bindings.bash
@@ -44,21 +41,6 @@
       fi
       export FZF_DEFAULT_OPTS='--height 40% --layout=reverse'
       bind -x '"\C-r": history -n; __fzf_history__'
-      _bartib_completions()
-      {
-        local CWORD=''${COMP_WORDS[COMP_CWORD]}
-        ALL_PROJECTS=`bartib projects`
-
-        local IFS=$'\n'
-        CANDIATE_PROJECTS=($(compgen -W "''${ALL_PROJECTS[*]}" -- "$CWORD"))
-
-        if [ ''${#CANDIATE_PROJECTS[*]} -eq 0 ]; then
-          COMPREPLY=()
-        else
-          COMPREPLY=($(printf "\"%s\"\n" "''${CANDIATE_PROJECTS[@]}"))
-        fi
-      }
-      complete -F _bartib_completions bartib
       eval "$(${pkgs.z-lua}/bin/z.lua --init bash enhanced once fzf)"
     '';
     promptInit = ''
