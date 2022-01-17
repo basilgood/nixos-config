@@ -57,6 +57,7 @@
   '';
   virtualisation.lxc.enable = true;
   virtualisation.lxd.enable = true;
+  virtualisation.wine.enable = true;
 
   system.stateVersion = "21.05";
 
