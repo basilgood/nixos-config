@@ -1,8 +1,6 @@
 { pkgs, ... }:
 {
   users.users.vasy.packages = with pkgs; [
-    deno
-    wezterm
     bartib
     wget
     archivemount
