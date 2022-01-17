@@ -143,7 +143,7 @@ let
     for_window [class=feh|sxiv] floating enable
     # pactl to adjust volume in PulseAudio.
     exec --no-startup-id ${pkgs.volumeicon}/bin/volumeicon &
-    exec --no-startup-id ${pkgs.volnoti-dbus}/bin/volnoti-dbus $
+    # exec --no-startup-id ${pkgs.volnoti-dbus}/bin/volnoti-dbus
     # autorandr
     exec --no-startup-id ${pkgs.autorandr}/bin/autorandr -c
     # wallpaper
@@ -164,6 +164,7 @@ in
       extraPackages = with pkgs; [
         rofi
         rofi-power-menu
+        rofi-file-browser
         zafiro-icons
         capitaine-cursors
         dunst
@@ -234,6 +235,7 @@ in
     markup = yes
     format = "%s %p\n%b"
     word_wrap = yes
+    geometry = "0x4-25+25"
     shrink = yes
     separator_height = 5
     padding = 8
@@ -267,6 +269,15 @@ in
     serviceConfig.Restart = "always";
     serviceConfig.RestartSec = 2;
     serviceConfig.ExecStart = "${pkgs.dunst}/bin/dunst -conf /etc/dunst/dunstrc";
+  };
+
+  systemd.user.services.volnoti = {
+    enable = true;
+    description = "";
+    wantedBy = [ "default.target" ];
+    serviceConfig.Restart = "always";
+    serviceConfig.RestartSec = 2;
+    serviceConfig.ExecStart = "${pkgs.volnoti-dbus}/bin/volnoti-dbus";
   };
 
   services.picom = {
