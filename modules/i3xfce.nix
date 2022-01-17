@@ -174,12 +174,7 @@ in
   services.picom = {
     enable = true;
     fade = true;
-    shadow = true;
-    fadeDelta = 4;
-    shadowOpacity = 0.5;
-    activeOpacity = 1.0;
-    inactiveOpacity = 1.0;
-    menuOpacity = 1.0;
+    fadeSteps = [ 0.04 0.04 ];
     backend = "glx";
     vSync = true;
   };
@@ -233,6 +228,8 @@ in
     ];
     setLdLibraryPath = true;
   };
+  hardware.sensor.hddtemp.enable = true;
+  hardware.sensor.hddtemp.drives = ["/dev/sda"];
 
   programs.ssh = {
     askPassword = "${pkgs.lxqt.lxqt-openssh-askpass}/bin/lxqt-openssh-askpass";
