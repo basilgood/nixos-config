@@ -37,7 +37,7 @@ _:
       set -g status-style fg=#81A1C1,bg=#3B4252
       set-window-option -ga window-status-activity-style fg=#3B4252,bg=#D08770
       set-option -g status-left ""
-      set -g status-right " #{?client_prefix,🤗,😊} "
+      set -g status-right " #{?client_prefix,🎩,""} "
       set -g window-status-current-format "#[bg=#4C566A] #F#I:#W#F "
       set -g window-status-format " #F#I:#W#F "
     '';
