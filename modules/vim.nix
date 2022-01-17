@@ -7,7 +7,7 @@
         buildInputs = [ makeWrapper ];
         paths = [
           (vim_configurable.override { python = python3; })
-          nodejs-slim
+          deno
           shfmt
           vim-vint
           nixpkgs-fmt
@@ -17,6 +17,7 @@
           wrapProgram "$out/bin/vim"
           makeWrapper ${nodePackages.typescript-language-server}/bin/typescript-language-server $out/bin/typescript-language-server
           makeWrapper ${nodePackages.prettier}/bin/prettier $out/bin/prettier
+          makeWrapper ${nodePackages.jsonlint}/bin/jsonlint $out/bin/jsonlint
         '';
       }
     )
