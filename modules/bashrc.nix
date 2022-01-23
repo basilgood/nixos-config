@@ -68,9 +68,7 @@
         # branch name
         local ref=$(git symbolic-ref --short HEAD 2>/dev/null)
         # tag name or hash
-        [[ -n "$ref" ]] && ref=$ref || ref=$($git describe --tags --always 2>/dev/null)
-        # not a git repo
-        [[ -n "$ref" ]] || return
+        [[ -n "$ref" ]] && ref=$ref || ref=$(git describe --tags --always 2>/dev/null)
         local status="$(git status --porcelain -b 2>/dev/null)"
         [[ $status =~ ([[:cntrl:]][A-Z][A-Z\ ]\ ) ]] && meta+=$STAGED
         [[ $status =~ ([[:cntrl:]][A-Z\ ][A-Z]\ ) ]] && meta+=$DIRTY
