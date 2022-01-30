@@ -8,6 +8,7 @@
         paths = [
           (vim_configurable.override { python = python3; })
           deno
+          nodejs
           shfmt
           vim-vint
           nixpkgs-fmt
