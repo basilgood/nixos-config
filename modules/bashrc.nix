@@ -41,7 +41,6 @@
       fi
       export FZF_DEFAULT_OPTS='--height 40% --layout=reverse'
       bind -x '"\C-r": history -n; __fzf_history__'
-      eval "$(${pkgs.z-lua}/bin/z.lua --init bash enhanced once fzf)"
     '';
     promptInit = ''
       RED="\033[31m"
