@@ -2,7 +2,7 @@
 {
   users.users.vasy.packages = with pkgs; [
     brave
-    google-chrome
+    firefox
     element-desktop
     thunderbird
     libreoffice
