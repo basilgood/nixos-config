@@ -17,6 +17,7 @@
     parted
     zathura
     youtube-dl
+    sad
     fzf
     ytfzf
     fd
