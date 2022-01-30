@@ -2,9 +2,9 @@
 {
   nix = {
     package = pkgs.nixFlakes;
-    maxJobs = lib.mkDefault 16;
-    autoOptimiseStore = true;
-    trustedUsers = [ "root" "vasy" "@wheel" ];
+    settings.maxJobs = lib.mkDefault 16;
+    settings.autoOptimiseStore = true;
+    settings.trustedUsers = [ "root" "vasy" "@wheel" ];
     extraOptions = ''
       experimental-features = nix-command flakes
     '';
