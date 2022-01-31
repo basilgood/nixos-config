@@ -4,21 +4,12 @@
     (
       symlinkJoin {
         name = "vim-with-config";
-        buildInputs = [ makeWrapper ];
+        nativeBuildInputs = [ makeWrapper ];
         paths = [
           (vim_configurable.override { python = python3; })
-          deno
-          nodejs
-          shfmt
-          vim-vint
-          nixpkgs-fmt
-          statix
         ];
         postBuild = ''
-          wrapProgram "$out/bin/vim"
-          makeWrapper ${nodePackages.typescript-language-server}/bin/typescript-language-server $out/bin/typescript-language-server
-          makeWrapper ${nodePackages.prettier}/bin/prettier $out/bin/prettier
-          makeWrapper ${nodePackages.jsonlint}/bin/jsonlint $out/bin/jsonlint
+          wrapProgram $out/bin/vim --prefix PATH : ${lib.makeBinPath [ nodePackages.jsonlint deno nodejs shfmt nixpkgs-fmt statix ]}
         '';
       }
     )
