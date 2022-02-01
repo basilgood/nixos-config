@@ -25,8 +25,8 @@
       pkgs = import nixpkgs { inherit system; };
     in
     {
-      # nixosConfigurations.plumfive = mkSystem "x86_64-linux" ./hosts/plumfive;
-      nixosConfigurations.hermes = mkSystem "x86_64-linux" ./hosts/hermes;
+      nixosConfigurations.plumfive = mkSystem "x86_64-linux" ./hosts/plumfive;
+      # nixosConfigurations.hermes = mkSystem "x86_64-linux" ./hosts/hermes;
       overlay = final: prev:
         (import ./pkgs/overlay.nix inputs final prev);
     };
