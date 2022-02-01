@@ -9,10 +9,11 @@ gui:
   theme:
     lightTheme: false # For terminals with a light background
     activeBorderColor:
-      - white
+      - blue
       - bold
     inactiveBorderColor:
-      - green
+      - black
+      - bold
     optionsTextColor:
       - blue
     selectedLineBgColor:
@@ -56,8 +57,7 @@ git:
     showGraph: 'when-maximised'
   skipHookPrefix: WIP
   autoFetch: true
-  # branchLogCmd: 'git log --graph --color=always --abbrev-commit --decorate --date=relative --pretty=medium {{branchName}} --'
-  branchLogCmd: 'git log --graph --all --pretty=format:"%C(240)%h %Cred%d %C(244)%cr%n %C(240)%an - %C(244)%s%n"'
+  branchLogCmd: 'git log --graph --color=always --abbrev-commit --decorate --date=relative --pretty=medium {{branchName}} --'
   allBranchesLogCmd: 'git log --graph --all --color=always --abbrev-commit --decorate --date=relative  --pretty=medium'
   overrideGpg: false # prevents lazygit from spawning a separate process when using GPG
   disableForcePushing: false
