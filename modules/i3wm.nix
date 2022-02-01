@@ -8,7 +8,8 @@ let
     # autorandr
     bindsym $mod+z exec --no-startup-id ${pkgs.autorandr}/bin/autorandr -c
     # lock:
-    bindsym $mod+l exec --no-startup-id "${pkgs.i3lock-fancy-rapid}/bin/i3lock-fancy-rapid 5 3"
+    bindsym $mod+l exec --no-startup-id "betterlockscreen --lock blur"
+    # exec --no-startup-id xidlehook --detect-sleep --not-when-fullscreen --not-when-audio --timer 300  'notify-send "Lock screen after 30 sec"' "" --timer 30 "betterlockscreen --lock blur" "" --timer 600 "systemctl poweroff" ""
     # screenshot:
     bindsym Print exec --no-startup-id maim -s | ${pkgs.xclip}/bin/xclip -selection clipboard -t image/png
     bindsym $mod+Print exec --no-startup-id maim ~/Pictures/$(date +%s).jpg
@@ -23,8 +24,12 @@ let
     # kill focused window
     bindsym $mod+Shift+q kill
     # launcher:
-    bindsym $mod+d exec --no-startup-id rofi -show drun -show-icons -terminal kitty -theme ${ ../assets/rofi.rasi }
-    bindsym $mod+Shift+e exec --no-startup-id rofi -show p -modi p:rofi-power-menu -theme ${ ../assets/rofi.rasi }
+    bindsym $mod+d exec --no-startup-id rofi -show drun -show-icons -terminal kitty -theme ${
+      ../assets/rofi.rasi
+    }
+    bindsym $mod+Shift+e exec --no-startup-id rofi -show p -modi p:rofi-power-menu -theme ${
+      ../assets/rofi.rasi
+    }
     # change focus
     bindsym $mod+Left focus left
     bindsym $mod+Down focus down
@@ -79,6 +84,9 @@ let
     bindsym $mod+Shift+8 move container to workspace number $ws8
     bindsym $mod+Shift+9 move container to workspace number $ws9
     bindsym $mod+Shift+0 move container to workspace number $ws10
+    # Back and Forth
+    workspace_auto_back_and_forth yes
+    bindsym $mod+Tab workspace back_and_forth
     # scratchpad
     bindsym $mod+m move scratchpad
     bindsym $mod+o scratchpad show
@@ -115,8 +123,8 @@ let
     client.background       #2B2C2B
     # status bar:
     bar {
-      height 26
-      font pango:monospace 9
+      height 30
+      font pango:monospace 10
       separator_symbol "::"
       position bottom
       status_command i3blocks
@@ -147,9 +155,11 @@ let
     # autorandr
     exec --no-startup-id ${pkgs.autorandr}/bin/autorandr -c
     # wallpaper
-    exec --no-startup-id ${pkgs.coreutils}/bin/sleep 1; ${pkgs.feh}/bin/feh --bg-fill ${../assets/wall.jpg}
+    exec --no-startup-id ${pkgs.coreutils}/bin/sleep 1; ${pkgs.feh}/bin/feh --bg-fill ${
+      ../assets/wall.jpg
+    }
     # redshift
-    # exec --no-startup-id ${pkgs.redshift}/bin/redshift-gtk -l 44:26 &
+    exec --no-startup-id ${pkgs.redshift}/bin/redshift-gtk -l 44:26 &
   '';
 
 in
@@ -175,19 +185,21 @@ in
         volumeicon
         volnoti-dbus
         i3blocks
-        i3lock-fancy-rapid
+        betterlockscreen
         xidlehook
       ];
       configFile = pkgs.writeText "i3-config-file" config;
-      extraSessionCommands = ''
-      '';
+      extraSessionCommands = "";
     };
     displayManager = {
       lightdm = {
         enable = true;
         background = "${../assets/wall.jpg}";
       };
-      sessionCommands = "xset s off";
+      sessionCommands = ''
+        xset s off
+        xset -dpms
+      '';
     };
   };
 
@@ -268,7 +280,8 @@ in
     wantedBy = [ "default.target" ];
     serviceConfig.Restart = "always";
     serviceConfig.RestartSec = 2;
-    serviceConfig.ExecStart = "${pkgs.dunst}/bin/dunst -conf /etc/dunst/dunstrc";
+    serviceConfig.ExecStart =
+      "${pkgs.dunst}/bin/dunst -conf /etc/dunst/dunstrc";
   };
 
   systemd.user.services.volnoti = {
@@ -293,7 +306,6 @@ in
     vSync = true;
   };
 
-  services.gnome.gnome-keyring.enable = true;
   services.gnome.at-spi2-core.enable = true;
   services.avahi.enable = true;
   services.dbus.packages = [ pkgs.flameshot pkgs.volnoti-dbus ];
@@ -306,11 +318,12 @@ in
     serviceConfig = {
       ExecStart = ''
         ${pkgs.xidlehook}/bin/xidlehook \
-          --not-when-fullscreen \
-          --not-when-audio \
-          --timer 270 "${pkgs.libnotify}/bin/notify-send --urgency=critical 'Idle' 'Resuming activity'" "" \
-          --timer 30 "${pkgs.i3lock-fancy-rapid}/bin/i3lock-fancy-rapid 5 3" "" \
-          --timer 600 "systemctl suspend" ""
+        --detect-sleep \
+        --not-when-fullscreen \
+        --not-when-audio \
+        --timer 300 "${pkgs.libnotify}/bin/notify-send --urgency=critical 'Idle' 'Resuming activity'" "" \
+        --timer 30 "${pkgs.betterlockscreen}/bin/betterlockscreen --lock blur" "" \
+        --timer 600 "systemctl suspend" ""
       '';
       Type = "simple";
     };
@@ -321,11 +334,7 @@ in
     enable = true;
     driSupport32Bit = true;
     extraPackages32 = with pkgs.pkgsi686Linux; [ libva ];
-    extraPackages = with pkgs; [
-      libGLU
-      vaapiVdpau
-      libvdpau-va-gl
-    ];
+    extraPackages = with pkgs; [ libGLU vaapiVdpau libvdpau-va-gl ];
     setLdLibraryPath = true;
   };
 
