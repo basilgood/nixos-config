@@ -9,7 +9,20 @@
           (vim_configurable.override { python = python3; })
         ];
         postBuild = ''
-          wrapProgram $out/bin/vim --prefix PATH : ${lib.makeBinPath [ nodePackages.jsonlint deno nodejs shfmt nixpkgs-fmt statix ]}
+          wrapProgram $out/bin/vim --prefix PATH : ${lib.makeBinPath [
+            nodejs
+            nodePackages.typescript-language-server
+            nodePackages.jsonlint
+            shfmt
+            shellcheck
+            rnix-lsp
+            efm-langserver
+            vim-vint
+            nixpkgs-fmt
+            statix
+            yamllint
+            deno
+          ]}
         '';
       }
     )
