@@ -85,7 +85,6 @@ let
     bindsym $mod+Shift+9 move container to workspace number $ws9
     bindsym $mod+Shift+0 move container to workspace number $ws10
     # Back and Forth
-    workspace_auto_back_and_forth yes
     bindsym $mod+Tab workspace back_and_forth
     # scratchpad
     bindsym $mod+m move scratchpad
