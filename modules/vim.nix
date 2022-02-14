@@ -6,17 +6,23 @@
         name = "vim-with-config";
         nativeBuildInputs = [ makeWrapper ];
         paths = [
-          (vim_configurable.override { python = python3; })
+          ((vim_configurable.override { python = python3; }).overrideAttrs (oldAttrs: rec {
+            version = "8.2.4375";
+            src = fetchFromGitHub {
+              owner = "vim";
+              repo = "vim";
+              rev = "v${version}";
+              sha256 = "sha256-e+3PpCr9HSd9glTNKBbsxWjO9f/yQGre/b3/+TBxdyc=";
+            };
+          }))
         ];
         postBuild = ''
           wrapProgram $out/bin/vim --prefix PATH : ${lib.makeBinPath [
             nodejs
-            nodePackages.typescript-language-server
             nodePackages.jsonlint
             shfmt
             shellcheck
             rnix-lsp
-            efm-langserver
             vim-vint
             nixpkgs-fmt
             statix
@@ -25,6 +31,6 @@
           ]}
         '';
       }
-    )
-  ];
-}
+      )
+    ];
+  }
