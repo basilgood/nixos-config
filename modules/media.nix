@@ -1,5 +1,4 @@
-{ pkgs, ... }:
-{
+{ pkgs, ... }: {
   users.users.vasy.packages = with pkgs; [
     mpv
     audio-recorder
@@ -12,10 +11,10 @@
     zoom-us
   ];
 
-  sound.enable = true;
+  # sound.enable = true;
   hardware.pulseaudio = {
     enable = true;
-    support32Bit = true;
+    # support32Bit = true;
     extraConfig = "load-module module-dbus-protocol";
   };
 }
