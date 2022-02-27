@@ -33,7 +33,7 @@
       HISTCONTROL=erasedups
       HISTSIZE=-1
       HISTFILESIZE=-1
-      HISTIGNORE="&:[ ]*:exit:l:ls:ll:bg:fg:history*:clear:kill*:?:??"
+      HISTIGNORE="&:[ ]*:exit:l:ls:ll:bg:fg:history*:clear:mpv:webtorrent:mkdir:kill*:?:??"
       if [[ :$SHELLOPTS: =~ :(vi|emacs): ]]; then
         . ${pkgs.fzf}/share/fzf/completion.bash
         . ${pkgs.fzf}/share/fzf/key-bindings.bash
