@@ -37,7 +37,7 @@
             libGL
             libpulseaudio
             libsamplerate
-            libudev
+            udev
             libva
             libxkbcommon
             nas
