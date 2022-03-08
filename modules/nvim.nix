@@ -15,10 +15,6 @@
               stylua
               lua53Packages.luacheck
               yamllint
-              gcc
-              rnix-lsp
-              nodePackages.typescript-language-server
-              nodePackages.prettier
             ]
           }
         '';
