@@ -3,9 +3,9 @@
   fonts = {
     fontDir.enable = true;
     fonts = with pkgs; [
-      cantarell_fonts
+      cantarell-fonts
       noto-fonts
-      (nerdfonts.override { fonts = [ "IBMPlexMono" "DejaVuSansMono" ]; })
+      (nerdfonts.override { fonts = [ "IBMPlexMono" "JetBrainsMono" "DejaVuSansMono" ]; })
     ];
   };
 }
