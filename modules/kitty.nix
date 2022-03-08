@@ -4,7 +4,7 @@
     (
       let
         config = ''
-          font_family IBM Plex Mono
+          font_family JetBrainsMonoMedium Nerd Font Mono
           bold_font        auto
           italic_font      auto
           bold_italic_font auto
