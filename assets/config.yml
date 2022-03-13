@@ -39,6 +39,7 @@ git:
   paging:
     colorArg: always
     useConfig: false
+    pager: delta --paging=never --24-bit-color=never --diff-so-fancy
   commit:
     signOff: false
   merging:
