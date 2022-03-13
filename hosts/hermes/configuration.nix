@@ -41,7 +41,7 @@
     VISUAL = "$EDITOR";
     # EDITOR = "nvim";
     # VISUAL="nvr --remote-wait-silent +'set bufhidden=wipe'";
-    BAT_THEME = "Nord";
+    BAT_THEME = "base16";
   };
 
   nixpkgs.config.allowUnfree = true;
