@@ -11,7 +11,7 @@
               shfmt
               vim-vint
               statix
-              nixfmt
+              nixpkgs-fmt
               stylua
               lua53Packages.luacheck
               yamllint
