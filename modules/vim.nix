@@ -6,13 +6,13 @@
         name = "vim-with-config";
         nativeBuildInputs = [ makeWrapper ];
         paths = [
-          ((vim_configurable.override { python = python3; }).overrideAttrs (oldAttrs: rec {
-            version = "8.2.4664";
+          (vim_configurable.overrideAttrs (oldAttrs: rec {
+            version = "8.2.4774";
             src = fetchFromGitHub {
               owner = "vim";
               repo = "vim";
               rev = "v${version}";
-              sha256 = "sha256-v0jub3bwyPS8OehU+md+TCF+YUW94UPHiXRbMWqoiF8=";
+              sha256 = "sha256-XHuzhT6wgjEl7cprkIANGN5LE0cjZbu4VEQ5Zrdpnk4=";
             };
           }))
         ];
@@ -24,10 +24,11 @@
             vim-vint
             nixpkgs-fmt
             statix
+            rnix-lsp
             yamllint
             deno
             nodejs
-          ]}
+            ]}
         '';
       }
     )
