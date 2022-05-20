@@ -24,8 +24,8 @@
     setLdLibraryPath = true;
   };
 
-  services.gnome.gnome-keyring.enable = true;
-  security.pam.services.sddm.enableGnomeKeyring = true;
+  # services.gnome.gnome-keyring.enable = true;
+  # security.pam.services.sddm.enableGnomeKeyring = true;
 
   users.users.vasy.packages = with pkgs; [
     qimgv
@@ -37,6 +37,5 @@
     libsForQt5.kwin-tiling
     libsForQt5.kcalc
     libsForQt5.kmahjongg
-    # xwayland
   ];
 }
